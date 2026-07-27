@@ -19,6 +19,7 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:lint": "python3 scripts/check_db_lint.py",
+    "db:lint:test": "python3 -m unittest scripts/test_check_db_lint.py",
     "db:test": "supabase test db",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

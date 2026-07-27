@@ -2,7 +2,9 @@
 
 **Handoff version:** 2.0  
 **Prepared:** 2026-07-26  
-**Status:** Task 00 is verified locally and paused at its review gate. Feature implementation has not started.
+**Status:** Task 00 and the Netlify deployment adaptation are verified locally.
+The GitHub repository is initialized with `main`, and the deployment adaptation
+is ready for its review branch. Feature implementation has not started.
 
 | Task | Status | Evidence / blocker |
 |---|---|---|
@@ -27,6 +29,9 @@
 - `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test` — passed.
 - Unit/component contracts — 5 tests passed.
 - `pnpm build` — Next.js 16.2.12 production build passed for all application/API routes.
+- `netlify build --offline --filter @call-on/web` — Netlify Runtime v5.15.12
+  completed the OpenNext build, server-function bundle, and middleware edge
+  bundle from the committed `netlify.toml`.
 - `supabase db reset` — migrations `001` through `007` applied from an empty PostgreSQL 17 database.
 - `supabase db lint --level warning` — no schema errors.
 - `supabase test db` — 47 assertions passed across tenant isolation, scoped guests, factual profile visibility, audited commands, idempotency mismatch/replay, competing Offers, private coordination, unauthorized Loan transitions, and the handoff-to-return lifecycle.
@@ -36,6 +41,18 @@
 - Client build scan — no server-only secret identifier was present in `apps/web/.next/static`.
 - Route/log audit — no route logs contact information or exact-location values; mock analytics/error logs retain only allowlisted names/classification.
 - Production-mode screenshots — six files captured at `390 × 844` and `1440 × 1024` under `artifacts/task-00/screenshots/`.
+
+## Repository and hosting status
+
+- Target repository: `https://github.com/Beejeezum/callon` (currently public).
+- Local `origin` points to that repository.
+- The verified Task 00 commit is published on `main`; GitHub Actions can now run
+  the supplied CI workflow remotely.
+- Netlify is now the accepted host (ADR-016). The public mock deployment
+  requires no Supabase or messaging secrets.
+- Root Netlify settings are committed in `netlify.toml`; when importing the
+  repository, leave Base directory unset and select `apps/web` as Package
+  directory.
 
 ## Infrastructure cleanup
 
@@ -59,7 +76,8 @@ No production external account, cloud database, provider credential, domain, mes
 
 ## Remaining review gates
 
-- Create/confirm the private GitHub repository and run the supplied Actions workflow remotely.
+- Review and merge the Netlify deployment PR, then inspect the first remote
+  GitHub Actions and Netlify build evidence.
 - Human approval is still required for external service accounts, production secrets, legal/safety policy, exact-location key custody, production migrations, real OTP/email/WhatsApp activation, and launch.
 - The current Next.js application is a verified mock-mode scaffold. Tasks 02 onward must replace mock projections with reviewed persistence without changing the privacy contract.
 - The static prototype under `prototype/interactive/` remains behavioral reference only.

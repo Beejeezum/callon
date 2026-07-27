@@ -19,7 +19,7 @@ Every critical organization must have at least two human owners. Do not share on
 | Service | Organization/project | Environments | Required purpose | Sensitive values |
 |---|---|---|---|---|
 | GitHub | company org + private repo | all | source, PRs, Actions, branch protection | deploy/app tokens only if required |
-| Vercel | company team + web project | preview/staging/production | Next.js hosting, functions, cron | environment variables, deploy hooks |
+| Netlify | company team + web project | deploy previews/staging/production | Next.js hosting, functions, scheduled jobs | environment variables, deploy hooks |
 | Supabase | company org; staging and production projects | staging/prod; CLI local | PostgreSQL, Auth, Storage | publishable and server secret keys, DB URLs |
 | Resend | company account + verified sending domain | staging/prod | transactional email and custom SMTP | API keys, webhook secret |
 | Twilio | company account/subaccount | staging/prod | SMS OTP provider | SID/token/provider configuration |
@@ -55,14 +55,15 @@ Enable:
 
 Do not put provider secrets in GitHub repository variables unless a specific Action requires them. Prefer OIDC/provider integrations or scoped environment secrets.
 
-## 4. Vercel setup
+## 4. Netlify setup
 
 Create one company team and one project initially:
 
 ```text
 Project: call-on-web
 Framework: Next.js
-Root directory: apps/web
+Base directory: unset (repository root)
+Package directory: apps/web
 Production branch: main
 Preview branches: all non-main branches
 Staging domain: staging.<domain> mapped to staging branch or a custom environment
@@ -71,18 +72,18 @@ Production domain: app.<domain> or <domain>
 
 Environment mapping:
 
-| Vercel environment | Data/services |
+| Netlify deploy context | Data/services |
 |---|---|
-| Development | local Supabase or explicitly pulled nonproduction values |
-| Preview | staging Supabase; mock/allowlisted provider destinations |
-| Staging/custom | staging Supabase and staging provider keys |
+| Local development | local Supabase or explicitly pulled nonproduction values |
+| Deploy Preview | staging Supabase; mock/allowlisted provider destinations |
+| Branch deploy/staging | staging Supabase and staging provider keys |
 | Production | production Supabase and production provider keys |
 
 Protect preview deployments when they expose realistic member data. Do not use production data in previews.
 
 Configure:
 
-- cron route `/api/cron/notifications` with `CRON_SECRET` verification;
+- a Netlify Scheduled Function that invokes the bounded notification worker;
 - environment variables from `.env.example`;
 - Sentry source-map upload token as a build secret;
 - production deploy authorization restricted to reviewed `main` merges;
@@ -152,11 +153,11 @@ Configure SPF, DKIM, and DMARC. Use separate API keys for staging and production
 
 ## 7. Cloudflare
 
-Use Cloudflare for DNS even if Vercel hosts the application. Create Turnstile widgets for staging and production.
+Use Cloudflare for DNS even if Netlify hosts the application. Create Turnstile widgets for staging and production.
 
 Minimum DNS/email records:
 
-- Vercel application domain;
+- Netlify application domain;
 - Resend SPF/DKIM records;
 - DMARC policy beginning in monitor mode, then tighten;
 - support/security mailboxes or forwarding;
@@ -208,9 +209,9 @@ The P1 assistant is one-to-one. It does not silently read an existing HOA group.
 
 | Variable class | Local | Preview/staging | Production |
 |---|---|---|---|
-| public app URL/key | `.env.local` | Vercel env | Vercel env |
+| public app URL/key | `.env.local` | Netlify env | Netlify env |
 | database migration URL | local CLI | CI/staging secret | restricted release secret; no routine developer access |
-| Supabase server secret | mock/local | Vercel server only | Vercel server only |
+| Supabase server secret | mock/local | Netlify server only | Netlify server only |
 | encryption/signing secrets | generated local value | unique staging | unique production; backed up securely |
 | provider API keys | mock/test | staging keys | production keys |
 | webhook secrets | local fixture | unique staging | unique production |
@@ -222,7 +223,7 @@ Rotate immediately if a secret appears in logs, screenshots, a prompt, issue, or
 1. Clear working ownership and choose company email domain.
 2. GitHub organization and private repository.
 3. Password-manager vault and recovery contacts.
-4. Vercel team/project.
+4. Netlify team/project.
 5. Supabase staging project; local CLI remains default for development.
 6. Resend staging domain/key.
 7. PostHog and Sentry staging projects.

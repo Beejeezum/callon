@@ -7,7 +7,8 @@ export function GET() {
     {
       ok: true,
       service: "call-on-web",
-      environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "unknown",
+      environment: process.env.CONTEXT ?? process.env.NODE_ENV ?? "unknown",
+      revision: process.env.COMMIT_REF?.slice(0, 12) ?? "local",
       timestamp: new Date().toISOString(),
     },
     { headers: { "Cache-Control": "no-store" } },

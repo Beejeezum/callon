@@ -16,7 +16,8 @@ Codex and human engineers append material decisions here. Do not silently drift 
 
 ## ADR-003 — Vercel over Netlify for production recommendation
 
-**Decision:** Vercel is the default host.  
+**Status:** superseded by ADR-016.
+**Decision:** Vercel was the original default host.
 **Reason:** direct Next.js integration, Git previews, environments, and cron reduce adapter risk.  
 **Note:** Next.js remains portable; provider-specific code is isolated.
 
@@ -102,6 +103,29 @@ Codex and human engineers append material decisions here. Do not silently drift 
 **Consequences:** Local and CI database gates avoid an unrelated log-shipping dependency. Production observability remains a separate provider/configuration decision.  
 **Security/privacy impact:** No authorization semantics change; migrations, Storage policies, and hostile database tests execute against the real local stack.  
 **Files/PR:** `package.json`, `supabase/config.toml`.
+
+## ADR-016 — Netlify is the deployment platform
+
+**Date:** July 26, 2026.
+
+**Status:** Accepted.
+**Decision:** Deploy the Next.js monorepo through Netlify with the maintained
+OpenNext adapter, Git-based deploy previews, and Netlify Scheduled Functions for
+the later notification worker.
+**Context:** The product owner already operates a Netlify account and explicitly
+selected it for the public pilot. Current Netlify documentation lists full
+support for Next.js App Router, Server Actions, Route Handlers, streaming,
+image optimization, and modern Next.js releases.
+**Alternatives:** Retain Vercel; deploy a static-only export; introduce a second
+application server.
+**Consequences:** Keep the monorepo base at repository root, set the Netlify
+package directory to `apps/web`, and use the committed root `netlify.toml`.
+Provider-specific scheduling stays isolated from domain services. The public
+mock deployment needs no secrets; staging/production data environments remain
+separate human gates.
+**Security/privacy impact:** Deploy previews remain mock or staging-only and
+must never receive production Supabase or provider credentials.
+**Files/PR:** `netlify.toml`, deployment documentation, health metadata.
 
 ## ADR template
 

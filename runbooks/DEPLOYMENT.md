@@ -2,7 +2,7 @@
 
 ## Preview
 
-Every pull request creates a Vercel Preview with mock providers and a non-production database branch/project. Run CI and Playwright. Never connect previews to production Supabase.
+Every pull request creates a Netlify Deploy Preview with mock providers and a non-production database branch/project. Run CI and Playwright. Never connect previews to production Supabase.
 
 ## Staging
 

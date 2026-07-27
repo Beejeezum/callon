@@ -1,0 +1,19 @@
+[build]
+  command = "pnpm --filter @call-on/web build"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "24.18.0"
+  PNPM_FLAGS = "--shamefully-hoist"
+  NETLIFY_NEXT_SKEW_PROTECTION = "true"
+
+[context.deploy-preview.environment]
+  EMAIL_PROVIDER = "mock"
+  AI_DRAFTS_ENABLED = "false"
+  WHATSAPP_ENABLED = "false"
+
+[context.branch-deploy.environment]
+  EMAIL_PROVIDER = "mock"
+  AI_DRAFTS_ENABLED = "false"
+  WHATSAPP_ENABLED = "false"
+

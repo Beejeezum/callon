@@ -3,7 +3,7 @@
 Review these official sources during implementation because APIs and requirements change.
 
 - Next.js App Router and installation: https://nextjs.org/docs/app and https://nextjs.org/docs/app/getting-started/installation
-- Vercel Next.js, Git deployments, environments, cron: https://vercel.com/docs/frameworks/full-stack/nextjs ; https://vercel.com/docs/git ; https://vercel.com/docs/deployments/environments ; https://vercel.com/docs/cron-jobs
+- Netlify Next.js, monorepos, and Scheduled Functions: https://docs.netlify.com/build/frameworks/framework-setup-guides/nextjs/overview/ ; https://docs.netlify.com/build/configure-builds/monorepos/ ; https://docs.netlify.com/build/functions/scheduled-functions/
 - Supabase Next.js Auth, RLS, secure data, Storage, backups: https://supabase.com/docs/guides/auth/quickstarts/nextjs ; https://supabase.com/docs/guides/database/postgres/row-level-security ; https://supabase.com/docs/guides/database/secure-data ; https://supabase.com/docs/guides/storage/security/access-control ; https://supabase.com/docs/guides/platform/backups
 - Resend Next.js and idempotency: https://resend.com/docs/send-with-nextjs ; https://resend.com/docs/dashboard/emails/idempotency-keys
 - Cloudflare Turnstile validation: https://developers.cloudflare.com/turnstile/get-started/server-side-validation/

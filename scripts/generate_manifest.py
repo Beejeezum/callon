@@ -13,6 +13,7 @@ IGNORED_PARTS = {
     ".branches",
     ".git",
     ".next",
+    ".netlify",
     ".supabase",
     ".temp",
     "__pycache__",

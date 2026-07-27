@@ -2,7 +2,7 @@
 
 ## 1. Database decision
 
-Use one managed PostgreSQL database per environment through Supabase. PostgreSQL is the domain source of truth. Do not put authoritative product state in Vercel KV, browser storage, PostHog, WhatsApp, or email-provider metadata.
+Use one managed PostgreSQL database per environment through Supabase. PostgreSQL is the domain source of truth. Do not put authoritative product state in hosting-provider storage, browser storage, PostHog, WhatsApp, or email-provider metadata.
 
 ## 2. Schema separation
 

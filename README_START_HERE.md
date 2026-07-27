@@ -100,7 +100,7 @@ The code is a production scaffold, not a launched service. Codex must still:
 - implement authenticated Server Actions/Route Handlers against Supabase;
 - run and correct every SQL migration in local Supabase;
 - complete RLS tests and cross-Circle attack tests;
-- wire OTP, email, Turnstile, Sentry, PostHog, and Vercel environments;
+- wire OTP, email, Turnstile, Sentry, PostHog, and Netlify environments;
 - replace mock repositories screen-by-screen;
 - add full accessibility, browser, concurrency, security, backup, and recovery evidence;
 - stop at the human gates in `AGENTS.md`.
@@ -111,3 +111,20 @@ The code is a production scaffold, not a launched service. Codex must still:
 - **Sequential autonomous implementation:** paste `CODEX_AUTONOMOUS_BUILD_PROMPT.md`; Codex may proceed through tasks with mandatory checkpoints and must stop at human gates.
 
 Do not give Codex a one-line “build this app” prompt. The repository instructions are the control system.
+
+## Netlify deployment
+
+This monorepo is ready to import into Netlify from GitHub:
+
+```text
+Repository: Beejeezum/callon
+Base directory: leave unset (repository root)
+Package directory: apps/web
+Build command: pnpm --filter @call-on/web build
+Publish directory: apps/web/.next
+```
+
+Netlify reads the root `netlify.toml`, uses the pinned Node/pnpm toolchain, and
+applies its maintained OpenNext adapter automatically. The mock-mode deployment
+requires no secrets. Set `NEXT_PUBLIC_APP_URL` to the final Netlify URL so shared
+Ask metadata uses the deployed origin.

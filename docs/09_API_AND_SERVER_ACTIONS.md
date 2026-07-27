@@ -209,7 +209,7 @@ Implement durable/server limits for:
 - AI draft endpoint;
 - webhook failures.
 
-Use IP/device/contact hashes with rotation and privacy review. Do not rely exclusively on Vercel-instance memory.
+Use IP/device/contact hashes with rotation and privacy review. Do not rely exclusively on hosting-instance memory.
 
 ## 8. Provider abstraction
 
