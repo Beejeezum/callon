@@ -57,7 +57,7 @@ $$;
 grant usage on schema tests to authenticated;
 grant execute on function tests.authenticate_as(text) to authenticated;
 
-select plan(29);
+select plan(30);
 
 select tests.create_supabase_user('requester@example.test', '61111111-1111-4111-8111-111111111111');
 select tests.create_supabase_user('lender@example.test', '62222222-2222-4222-8222-222222222222');
@@ -386,6 +386,11 @@ select is(
   (select status::text from public.ask_needs where ask_id = (select id from test_ids where name = 'ask')),
   'completed',
   'Confirmed return completes the Need'
+);
+select is(
+  (select status::text from public.asks where id = (select id from test_ids where name = 'ask')),
+  'completed',
+  'Completing the final Need closes the Ask and its share lifecycle'
 );
 select isnt(
   has_schema_privilege('authenticated', 'private', 'usage'),

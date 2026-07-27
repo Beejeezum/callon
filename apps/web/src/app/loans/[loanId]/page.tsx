@@ -1,17 +1,36 @@
 import { AppShell, MobileHeader } from "@/components/app-shell";
 import { LoanTracker } from "@/components/loan-tracker";
+import { getLoanDetail } from "@/server/transaction-queries";
+import { getSessionContext } from "@/server/session";
+import { notFound } from "next/navigation";
 
-export default function LoanPage() {
+export default async function LoanPage({
+  params,
+}: {
+  params: Promise<{ loanId: string }>;
+}) {
+  const { loanId } = await params;
+  const session = await getSessionContext();
+  const loan = await getLoanDetail(loanId, session.profileId);
+  if (!loan) notFound();
   return (
-    <AppShell>
+    <AppShell circleName={session.activeMembership?.circleName}>
       <div className="page-shell">
         <MobileHeader
-          title="My loan"
-          subtitle="Due Sunday at 6 PM"
+          title="Loan custody"
+          subtitle={
+            loan.dueAt
+              ? `Due ${new Intl.DateTimeFormat("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                }).format(new Date(loan.dueAt))}`
+              : "Private custody record"
+          }
           backHref="/activity"
           actions={false}
         />
-        <LoanTracker />
+        <LoanTracker loan={loan} />
       </div>
     </AppShell>
   );

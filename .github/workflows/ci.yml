@@ -57,8 +57,15 @@ jobs:
 
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     needs: [web]
+    env:
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      SHARE_TOKEN_PEPPER: call-on-ci-share-token-pepper-not-for-production
+      LOCATION_ENCRYPTION_KEY_V1: call-on-ci-location-key-not-for-production
+      EMAIL_PROVIDER: mock
+      AI_DRAFTS_ENABLED: "false"
+      WHATSAPP_ENABLED: "false"
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -71,5 +78,16 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - uses: supabase/setup-cli@v2
+        with:
+          version: 2.109.1
+      - name: Start and migrate isolated local Supabase
+        run: |
+          supabase start -x studio,imgproxy,edge-runtime,logflare,vector
+          supabase db reset
+          eval "$(supabase status -o env)"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> "$GITHUB_ENV"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> "$GITHUB_ENV"
       - run: pnpm --filter @call-on/web exec playwright install --with-deps chromium
       - run: pnpm test:e2e

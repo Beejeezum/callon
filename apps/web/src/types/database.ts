@@ -1350,6 +1350,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      accept_circle_invite: { Args: { p_input: Json }; Returns: string };
       accept_offer: { Args: { p_input: Json }; Returns: string };
       can_moderate_circle: {
         Args: { p_circle_id: string; p_profile_id?: string };
@@ -1367,7 +1368,28 @@ export type Database = {
         Args: { p_target_profile_id: string; p_viewer_profile_id?: string };
         Returns: boolean;
       };
+      claim_notification_jobs: {
+        Args: { p_limit?: number; p_worker: string };
+        Returns: Json;
+      };
+      complete_non_loan_commitment: {
+        Args: { p_input: Json };
+        Returns: string;
+      };
       create_ask: { Args: { p_input: Json }; Returns: string };
+      create_circle: { Args: { p_input: Json }; Returns: string };
+      create_circle_invite: { Args: { p_input: Json }; Returns: string };
+      decide_offer: { Args: { p_input: Json }; Returns: string };
+      decline_loan_extension: { Args: { p_input: Json }; Returns: string };
+      get_circle_invite_preview: {
+        Args: { p_token_hash: string };
+        Returns: Json;
+      };
+      get_commitment_location: {
+        Args: { p_commitment_id: string };
+        Returns: Json;
+      };
+      get_shared_ask: { Args: { p_token_hash: string }; Returns: Json };
       is_active_circle_member: {
         Args: { p_circle_id: string; p_profile_id?: string };
         Returns: boolean;
@@ -1380,11 +1402,22 @@ export type Database = {
         Args: { p_conversation_id: string; p_profile_id?: string };
         Returns: boolean;
       };
+      moderate_membership: { Args: { p_input: Json }; Returns: string };
+      prepare_notification_jobs: { Args: { p_limit?: number }; Returns: Json };
       publish_ask: {
         Args: { p_ask_id: string; p_idempotency_key: string };
         Returns: string;
       };
+      publish_ask_with_share: { Args: { p_input: Json }; Returns: string };
+      redeem_shared_ask: { Args: { p_token_hash: string }; Returns: string };
+      report_incident: { Args: { p_input: Json }; Returns: string };
+      report_loan_incident: { Args: { p_input: Json }; Returns: string };
+      save_resource_from_loan: { Args: { p_input: Json }; Returns: string };
+      send_commitment_message: { Args: { p_input: Json }; Returns: string };
+      set_commitment_location: { Args: { p_input: Json }; Returns: string };
+      settle_notification_job: { Args: { p_input: Json }; Returns: string };
       submit_offer: { Args: { p_input: Json }; Returns: string };
+      transition_ask: { Args: { p_input: Json }; Returns: string };
       transition_loan: { Args: { p_input: Json }; Returns: string };
     };
     Enums: {

@@ -13,6 +13,7 @@ export type Ask = {
   description: string;
   label: "Need help" | "Offering" | "Event";
   dateLabel: string;
+  neededBy?: string;
   generalLocation: string;
   progress: number;
   image?: string;
@@ -24,7 +25,7 @@ export type Offer = {
   askId: string;
   needId: string;
   name: string;
-  avatar: string;
+  avatar?: string;
   message: string;
   detail: string;
   itemName?: string;
@@ -33,6 +34,9 @@ export type Offer = {
   generalLocation: string;
   completedShares: number;
   receivedLabel: string;
+  status?: string;
+  neededBy?: string;
+  submittedAt?: string;
 };
 
 export const currentCircle = {

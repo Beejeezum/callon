@@ -3,7 +3,7 @@
   --surface: #ffffff;
   --surface-soft: #fbfaf7;
   --ink: #0f172a;
-  --muted: #64748b;
+  --muted: #526176;
   --subtle: #94a3b8;
   --line: #e7e3db;
   --line-strong: #d8d3c9;
@@ -461,7 +461,7 @@ h3 {
   display: inline-flex;
 }
 .badge.need {
-  color: var(--violet-600);
+  color: #5b35bd;
   background: var(--violet-50);
 }
 .badge.offer {

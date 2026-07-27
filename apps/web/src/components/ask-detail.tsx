@@ -1,33 +1,71 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import {
   Check,
   ChatCircle,
-  PencilSimple,
   ShareNetwork,
   UsersThree,
 } from "@phosphor-icons/react";
 import type { Ask } from "@/lib/mock-data";
 import { Badge, Button, ButtonLink, Card, CheckCircle, Progress } from "./ui";
+import { createShareForExistingAskAction } from "@/server/ask-actions";
+import { MemberOfferForm } from "./member-offer-form";
 
-export function AskDetail({ ask }: { ask: Ask }) {
+export function AskDetail({
+  ask,
+  viewerIsOwner,
+  canOffer,
+}: {
+  ask: Ask;
+  viewerIsOwner: boolean;
+  canOffer: boolean;
+}) {
   const [copied, setCopied] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
+  const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState("");
+  const [shareKey] = useState(() => crypto.randomUUID());
 
   async function share() {
-    const url = `${window.location.origin}/share/oakridge-birthday-demo`;
-    if (navigator.share) {
-      await navigator.share({
-        title: ask.title,
-        text: `Can you help with ${ask.title}?`,
-        url,
+    setSharing(true);
+    setShareError("");
+    let url = shareUrl;
+    if (!url) {
+      const result = await createShareForExistingAskAction({
+        askId: ask.id,
+        neededBy:
+          ask.neededBy ??
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        idempotencyKey: shareKey,
       });
-      return;
+      if (!result.ok) {
+        setShareError(result.error.message);
+        setSharing(false);
+        return;
+      }
+      url = result.data.shareUrl;
+      setShareUrl(url);
     }
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: ask.title,
+          text: `Can you help with ${ask.title}?`,
+          url,
+        });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        setShareError("The share menu could not open. Try copying the link.");
+      }
+    } finally {
+      setSharing(false);
+    }
   }
 
   const covered = ask.needs.filter(
@@ -38,10 +76,7 @@ export function AskDetail({ ask }: { ask: Ask }) {
     <div className="content">
       <div className="row-between">
         <Badge tone="need">Open Ask</Badge>
-        <div className="row">
-          <button className="icon-button" aria-label="Edit Ask">
-            <PencilSimple size={19} />
-          </button>
+        {viewerIsOwner ? (
           <button
             className="icon-button"
             onClick={share}
@@ -49,7 +84,7 @@ export function AskDetail({ ask }: { ask: Ask }) {
           >
             <ShareNetwork size={19} />
           </button>
-        </div>
+        ) : null}
       </div>
       <div className="spacer-16" />
       <h1>{ask.title}</h1>
@@ -59,18 +94,6 @@ export function AskDetail({ ask }: { ask: Ask }) {
         <span>·</span>
         <span>{ask.generalLocation}</span>
       </div>
-      {ask.image ? (
-        <Image
-          className="card-media"
-          style={{ borderRadius: 16, height: 220 }}
-          src={ask.image}
-          alt="Birthday party setup"
-          width={680}
-          height={220}
-          priority
-        />
-      ) : null}
-
       <section className="section">
         <div className="section-heading">
           <div>
@@ -79,9 +102,15 @@ export function AskDetail({ ask }: { ask: Ask }) {
               {covered} of {ask.needs.length} needs covered
             </p>
           </div>
-          <ButtonLink href={`/asks/${ask.id}/offers`} variant="secondary" small>
-            <UsersThree size={16} /> View offers
-          </ButtonLink>
+          {viewerIsOwner ? (
+            <ButtonLink
+              href={`/asks/${ask.id}/offers`}
+              variant="secondary"
+              small
+            >
+              <UsersThree size={16} /> View offers
+            </ButtonLink>
+          ) : null}
         </div>
         <Progress value={ask.progress} />
         <div className="card" style={{ marginTop: 14, overflow: "hidden" }}>
@@ -98,73 +127,66 @@ export function AskDetail({ ask }: { ask: Ask }) {
                       : `${need.quantity - need.committed} still needed`}
                   </div>
                 </div>
-                {!done ? (
-                  <Button small variant="secondary">
-                    Offer
-                  </Button>
-                ) : (
+                {done ? (
                   <Check size={18} color="var(--green-600)" weight="bold" />
-                )}
+                ) : null}
               </div>
             );
           })}
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <h2>Activity</h2>
-            <p className="muted small" style={{ margin: 0 }}>
-              Only you can see private offer details.
-            </p>
-          </div>
-        </div>
-        <Card className="pad">
-          <div className="stack">
-            <div className="row-start">
-              <Image
-                className="avatar"
-                src="/assets/avatar-lisa.png"
-                alt=""
-                width={34}
-                height={34}
-              />
+      {viewerIsOwner ? (
+        <>
+          <section className="section">
+            <div className="section-heading">
               <div>
-                <div className="small">
-                  <strong>Janet</strong> offered two folding tables
-                </div>
-                <div className="tiny muted">Just now</div>
+                <h2>Activity</h2>
+                <p className="muted small" style={{ margin: 0 }}>
+                  Only you can see private offer details.
+                </p>
               </div>
             </div>
-            <div className="row-start">
-              <Image
-                className="avatar"
-                src="/assets/avatar-mike.png"
-                alt=""
-                width={34}
-                height={34}
-              />
-              <div>
-                <div className="small">
-                  <strong>Mark</strong> offered a large cooler
-                </div>
-                <div className="tiny muted">5 minutes ago</div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </section>
+            <Card className="pad">
+              <p className="small" style={{ margin: 0 }}>
+                Open the private Offers list to review who can help, timing, and
+                item details. Neighbors never see competing Offers.
+              </p>
+            </Card>
+          </section>
 
-      <section className="section stack-sm">
-        <ButtonLink href={`/asks/${ask.id}/offers`} full>
-          <ChatCircle size={18} /> Review private offers
-        </ButtonLink>
-        <Button full variant="neutral" onClick={share}>
-          <ShareNetwork size={18} />{" "}
-          {copied ? "Link copied" : "Share Ask again"}
-        </Button>
-      </section>
+          <section className="section stack-sm">
+            {shareError ? (
+              <div className="notice error">{shareError}</div>
+            ) : null}
+            <ButtonLink href={`/asks/${ask.id}/offers`} full>
+              <ChatCircle size={18} /> Review private offers
+            </ButtonLink>
+            <Button full variant="neutral" onClick={share} disabled={sharing}>
+              <ShareNetwork size={18} />{" "}
+              {sharing
+                ? "Preparing link…"
+                : copied
+                  ? "Link copied"
+                  : "Share Ask again"}
+            </Button>
+          </section>
+        </>
+      ) : (
+        <section className="section">
+          {canOffer ? (
+            <MemberOfferForm ask={ask} />
+          ) : (
+            <Card className="pad soft">
+              <h2>Viewing only</h2>
+              <p className="muted small" style={{ marginBottom: 0 }}>
+                Your Circle access currently allows you to finish existing
+                commitments, but not create a new Offer.
+              </p>
+            </Card>
+          )}
+        </section>
+      )}
     </div>
   );
 }

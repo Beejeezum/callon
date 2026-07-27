@@ -3,17 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CalendarBlank, MapPin, UsersThree } from "@phosphor-icons/react";
-import { asks } from "@/lib/mock-data";
+import { CalendarBlank, HandHeart, MapPin } from "@phosphor-icons/react";
+import type { Ask } from "@/lib/mock-data";
 import { Badge, Chip, Progress } from "./ui";
 
 const filters = ["All", "Need help", "Offering", "Event"] as const;
 
-export function HomeFeed() {
+export function HomeFeed({ asks }: { asks: Ask[] }) {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const visible = useMemo(
     () => asks.filter((ask) => filter === "All" || ask.label === filter),
-    [filter],
+    [asks, filter],
   );
 
   return (
@@ -84,25 +84,17 @@ export function HomeFeed() {
                   label={`${ask.needs.filter((need) => need.committed >= need.quantity).length} of ${ask.needs.length} needs filled`}
                 />
                 <div className="row-between" style={{ marginTop: 12 }}>
-                  <div className="avatar-stack" aria-label="Neighbors helping">
-                    <Image
-                      className="avatar sm"
-                      src="/assets/avatar-lisa.png"
-                      alt=""
-                      width={28}
-                      height={28}
-                    />
-                    <Image
-                      className="avatar sm"
-                      src="/assets/avatar-mike.png"
-                      alt=""
-                      width={28}
-                      height={28}
-                    />
-                    <span className="avatar avatar-fallback sm">+2</span>
-                  </div>
                   <Chip tone="violet">
-                    <UsersThree size={14} /> 4 offers
+                    <HandHeart size={14} />{" "}
+                    {
+                      ask.needs.filter((need) => need.committed < need.quantity)
+                        .length
+                    }{" "}
+                    open{" "}
+                    {ask.needs.filter((need) => need.committed < need.quantity)
+                      .length === 1
+                      ? "need"
+                      : "needs"}
                   </Chip>
                 </div>
               </div>
