@@ -86,6 +86,26 @@ export function PublicAsk({
     window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
   }
 
+  async function openShareOptions() {
+    setError("");
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: ask.title,
+          url: window.location.href,
+        });
+      } else {
+        await copyLink();
+      }
+    } catch (shareError) {
+      if (!(
+        shareError instanceof DOMException && shareError.name === "AbortError"
+      )) {
+        setError("The share menu could not open. The link is still available.");
+      }
+    }
+  }
+
   async function requestCode() {
     setPending(true);
     setError("");
@@ -259,15 +279,7 @@ export function PublicAsk({
               <Button variant="neutral" onClick={copyLink}>
                 <Copy size={17} /> {copied ? "Copied" : "Copy link"}
               </Button>
-              <Button
-                variant="neutral"
-                onClick={() =>
-                  navigator.share?.({
-                    title: ask.title,
-                    url: window.location.href,
-                  })
-                }
-              >
+              <Button variant="neutral" onClick={openShareOptions}>
                 <ShareNetwork size={17} /> Share options
               </Button>
             </div>
