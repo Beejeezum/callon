@@ -66,7 +66,7 @@ domain transaction
 
 ## 6. Cron
 
-Vercel cron calls `/api/cron/notifications` every 5–15 minutes for P0. Route verifies a secret and claims a bounded batch. It must be safe when two invocations overlap.
+A Netlify Scheduled Function invokes the notification worker every 5–15 minutes for P0. The worker claims a bounded batch and must be safe when two invocations overlap. Scheduled Functions run only on published deploys and have a 30-second execution limit, so long work is split into idempotent batches.
 
 Longer-term, Supabase cron/queue or a dedicated worker may replace it, but do not add infrastructure before load requires it.
 

@@ -12,6 +12,7 @@ warnings: list[str] = []
 GENERATED_DIRS = {
     ".git",
     ".next",
+    ".netlify",
     ".supabase",
     "coverage",
     "node_modules",

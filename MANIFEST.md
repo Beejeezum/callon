@@ -1,10 +1,10 @@
 # Call On Production Kit — Manifest
 
-Generated: `2026-07-27T01:24:31+00:00`
+Generated: `2026-07-27T01:52:09+00:00`
 
 - Handoff version: **2.0**
-- Files represented: **259** (generated manifest/checksum files excluded from their own hash set)
-- Payload size represented: **18,948,481 bytes**
+- Files represented: **260** (generated manifest/checksum files excluded from their own hash set)
+- Payload size represented: **20,007,666 bytes**
 
 ## Start here
 
@@ -29,10 +29,11 @@ Generated: `2026-07-27T01:24:31+00:00`
 | `CODEX_AUTONOMOUS_BUILD_PROMPT.md` | 1 |
 | `CODEX_START_PROMPT.md` | 1 |
 | `README_START_HERE.md` | 1 |
-| `apps` | 79 |
+| `apps` | 80 |
 | `artifacts` | 6 |
 | `design` | 9 |
 | `docs` | 38 |
+| `netlify.toml` | 1 |
 | `package.json` | 1 |
 | `packages` | 7 |
 | `patches` | 1 |
@@ -45,7 +46,6 @@ Generated: `2026-07-27T01:24:31+00:00`
 | `scripts` | 6 |
 | `supabase` | 11 |
 | `tasks` | 11 |
-| `vercel.json` | 1 |
 | `visuals` | 31 |
 
 ## Critical implementation assets

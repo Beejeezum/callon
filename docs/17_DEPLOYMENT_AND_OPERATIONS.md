@@ -3,19 +3,21 @@
 ## 1. Deployment topology
 
 ```text
-GitHub private repo
-  ├── PR branch → Vercel Preview → staging Supabase/providers
+GitHub repository
+  ├── PR branch → Netlify Deploy Preview → staging Supabase/providers
   ├── staging branch/domain → staging Supabase/providers
-  └── main → Vercel Production → production Supabase/providers
+  └── main → Netlify Production → production Supabase/providers
 ```
 
-For stronger isolation, create separate Vercel staging and production projects. The critical requirement is separate data and secrets.
+For stronger isolation, create separate Netlify staging and production projects. The critical requirement is separate data and secrets.
 
 ## 2. Build configuration
 
-Vercel project root: `apps/web`.  
+Netlify base directory: repository root (unset).
+Netlify package directory: `apps/web`.
 Package manager: pnpm workspace.  
-Install from repository root if Vercel workspace detection requires it; document final setting in decision log.
+Install and build from the repository root so workspace packages resolve. The root
+`netlify.toml` is authoritative.
 
 Commands:
 
@@ -39,7 +41,7 @@ Task 00 resolves current stable dependencies and commits `pnpm-lock.yaml`.
 
 ## 4. Scheduled jobs
 
-P0 cron invokes a server route to:
+A Netlify Scheduled Function invokes a bounded worker to:
 
 - claim due outbox/notification jobs;
 - expire Asks/Offers/share links;
@@ -48,13 +50,15 @@ P0 cron invokes a server route to:
 - clean expired drafts/tokens;
 - emit health metrics.
 
-Each job uses locks/idempotency and a batch limit. Long processing continues through repeated invocations rather than exceeding function time.
+Each job uses locks/idempotency and a batch limit. Netlify Scheduled Functions
+have a 30-second execution limit, so long processing continues through repeated
+invocations rather than attempting an unbounded run.
 
 ## 5. Monitoring
 
 Dashboards/alerts:
 
-- Vercel request error rate/latency;
+- Netlify request/function error rate and latency;
 - Sentry new/regressed errors;
 - Supabase DB CPU/connections/storage/query latency;
 - Auth OTP send/failure/abuse spend;

@@ -2,13 +2,13 @@
 
 ## Ownership model
 
-Use company-controlled email aliases, not a founder's personal identity, for GitHub organization, Vercel, Supabase, Cloudflare, Resend, Twilio, Sentry, PostHog, OpenAI, and Meta. Require MFA. Keep two human owners for recovery; use least-privilege member roles for daily work.
+Use company-controlled email aliases, not a founder's personal identity, for GitHub organization, Netlify, Supabase, Cloudflare, Resend, Twilio, Sentry, PostHog, OpenAI, and Meta. Require MFA. Keep two human owners for recovery; use least-privilege member roles for daily work.
 
 ## Environment order
 
 1. Create GitHub private repository and branch protection.
 2. Create separate Supabase **staging** and **production** projects.
-3. Create Vercel project connected to GitHub; map Preview/Staging/Production variables separately.
+3. Create the Netlify project connected to GitHub; map Deploy Preview, branch/staging, and Production variables separately.
 4. Configure DNS through Cloudflare only after name/domain approval.
 5. Verify sending subdomain in Resend; use a dedicated transactional sender.
 6. Configure Supabase phone provider and email SMTP only in staging first.
@@ -18,7 +18,7 @@ Use company-controlled email aliases, not a founder's personal identity, for Git
 
 ## Secret rules
 
-- Store secrets in provider/Vercel encrypted environment settings.
+- Store secrets in provider/Netlify encrypted environment settings.
 - Never paste secrets into Codex prompts, issues, chat, screenshots, or committed `.env` files.
 - Rotate after accidental disclosure; deleting a message is not remediation.
 - Production and staging never share secrets, encryption keys, webhook tokens, or databases.

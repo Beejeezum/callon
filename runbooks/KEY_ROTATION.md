@@ -1,6 +1,6 @@
 # Key Rotation
 
-Covers location/contact encryption keys, share-token pepper, webhook secrets, Supabase keys, provider keys, and Vercel secrets.
+Covers location/contact encryption keys, share-token pepper, webhook secrets, Supabase keys, provider keys, and Netlify secrets.
 
 - Maintain versioned application encryption keys; ciphertext records include `key_version`.
 - Deploy code capable of reading old and new versions before re-encryption.

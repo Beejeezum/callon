@@ -13,6 +13,8 @@ test-results
 .env.*.local
 !.env.example
 .vercel
+.netlify
+deno.lock
 .supabase
 supabase/.branches
 supabase/.temp

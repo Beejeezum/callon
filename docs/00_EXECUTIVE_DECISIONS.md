@@ -89,7 +89,7 @@ Do not add:
 |---|---|---|
 | Source control | GitHub private repository | standard pull-request workflow and Codex compatibility |
 | Web/full-stack | Next.js App Router + strict TypeScript | one deployable, server and client boundaries, share-page metadata |
-| Hosting | Vercel | direct Next.js support, Git previews, environment separation, cron |
+| Hosting | Netlify | maintained OpenNext support, Git previews, environment separation, scheduled functions |
 | Database | Supabase PostgreSQL | relational integrity, transactions, RLS, managed operations |
 | Authentication | Supabase Auth | phone/email OTP, cookie-backed SSR, database integration |
 | Files | private Supabase Storage buckets | RLS-integrated media and evidence access |

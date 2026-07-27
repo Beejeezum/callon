@@ -1,6 +1,0 @@
-# Rename to CODEOWNERS after replacing placeholders.
-* @your-org/product-engineering
-/supabase/ @your-org/security-reviewer @your-org/product-engineering
-/apps/web/src/server/ @your-org/security-reviewer @your-org/product-engineering
-/runbooks/ @your-org/operations-owner
-/docs/15_SECURITY_PRIVACY_AND_SAFETY.md @your-org/privacy-owner @your-org/security-reviewer

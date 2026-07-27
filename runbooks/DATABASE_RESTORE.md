@@ -13,7 +13,7 @@ Prove that posted domain records, private contact/location ciphertext, storage r
 5. Validate RLS as multiple synthetic identities.
 6. Validate private schema is inaccessible to anon/authenticated roles.
 7. Confirm storage objects and database paths reconcile.
-8. Run core Ask/Offer/Loan read paths in a temporary Vercel environment.
+8. Run core Ask/Offer/Loan read paths in a temporary Netlify branch deploy.
 9. Destroy the drill project according to retention policy.
 
 Record RPO, RTO, gaps, owner, date, and corrective actions. Production launch requires a successful drill.

@@ -2,6 +2,7 @@
 prototype/
 visuals/
 design/assets/
+**/.netlify/
 MANIFEST.json
 pnpm-lock.yaml
 schemas/database-blueprint.sql

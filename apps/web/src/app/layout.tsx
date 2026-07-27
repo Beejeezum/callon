@@ -7,7 +7,9 @@ export const metadata: Metadata = {
   description:
     "Ask for what you need, share what you have, and make real neighborhood projects easier.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+    process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.DEPLOY_PRIME_URL ??
+      "http://localhost:3000",
   ),
   applicationName: "Call On",
   robots: { index: false, follow: false },

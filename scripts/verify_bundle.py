@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GENERATED_DIRS = {
     ".git",
     ".next",
+    ".netlify",
     ".supabase",
     "coverage",
     "node_modules",

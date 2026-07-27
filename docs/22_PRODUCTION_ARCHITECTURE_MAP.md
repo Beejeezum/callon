@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart LR
-  U[Member / shared-link visitor] --> V[Vercel edge + Next.js App Router]
+  U[Member / shared-link visitor] --> V[Netlify OpenNext + Next.js App Router]
   V --> SA[Server Actions / Route Handlers]
   SA --> A[Actor + token scope resolution]
   A --> Z[Zod contracts]
@@ -13,7 +13,7 @@ flowchart LR
   RPC --> P[(public schema + RLS)]
   RPC --> X[(private schema)]
   RPC --> O[Audit + outbox]
-  O --> C[Vercel cron / worker]
+  O --> C[Netlify Scheduled Function / worker]
   C --> E[Resend adapter]
   C --> W[WhatsApp adapter P1]
   SA --> S[Private Supabase Storage]
@@ -57,11 +57,11 @@ flowchart TB
     LW --> LM[Mock providers]
   end
   subgraph Staging
-    SV[Vercel staging] --> SS[(Supabase staging)]
+    SV[Netlify staging] --> SS[(Supabase staging)]
     SV --> SP[Sandbox / allowlisted providers]
   end
   subgraph Production
-    PV[Vercel production] --> PS[(Supabase production)]
+    PV[Netlify production] --> PS[(Supabase production)]
     PV --> PP[Production providers]
   end
 ```

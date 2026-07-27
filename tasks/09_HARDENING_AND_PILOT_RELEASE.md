@@ -5,7 +5,7 @@
 - product name/domain/trademark review;
 - lawyer-approved terms, privacy, waiver, moderation, prohibited categories, retention;
 - independent application/RLS/security review;
-- production Supabase/Vercel/provider accounts and least-privilege access;
+- production Supabase/Netlify/provider accounts and least-privilege access;
 - migration rehearsal and rollback/forward-fix plan;
 - backup/PITR restore drill;
 - encryption-key rotation drill;

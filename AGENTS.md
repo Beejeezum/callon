@@ -87,7 +87,7 @@ Use current supported security-patched versions and official documentation.
 - icons: Phosphor;
 - contracts/validation: Zod in `packages/contracts`;
 - database/auth/storage: Supabase PostgreSQL/Auth/private Storage;
-- hosting: Vercel;
+- hosting: Netlify with the maintained OpenNext adapter;
 - tests: Vitest, Playwright, PostgreSQL/pgTAP RLS tests;
 - email: adapter, initial provider Resend;
 - OTP: Supabase-supported SMS provider, initial default Twilio, with email fallback;

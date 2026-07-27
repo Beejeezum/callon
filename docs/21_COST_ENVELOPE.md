@@ -7,7 +7,7 @@ Pricing changes frequently. Verify current provider pricing before purchase. Thi
 Expected paid categories:
 
 - domain/email mailboxes;
-- Vercel team/project if collaboration/protection features require it;
+- Netlify team/project if collaboration/protection features require it;
 - Supabase production paid plan and optional compute/PITR;
 - Resend beyond free/testing volume;
 - Twilio/SMS OTP per send plus phone/provider fees;
