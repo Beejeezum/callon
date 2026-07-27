@@ -1,0 +1,8 @@
+**/*.md
+prototype/
+visuals/
+design/assets/
+MANIFEST.json
+pnpm-lock.yaml
+schemas/database-blueprint.sql
+supabase/

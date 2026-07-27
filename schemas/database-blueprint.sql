@@ -1,0 +1,32 @@
+-- Call On database blueprint pointer
+--
+-- This file is intentionally non-executable. The authoritative, ordered schema is:
+--
+--   supabase/migrations/202607260001_extensions_types.sql
+--   supabase/migrations/202607260002_core_tables.sql
+--   supabase/migrations/202607260003_helpers_transactions.sql
+--   supabase/migrations/202607260004_rls.sql
+--   supabase/migrations/202607260005_storage.sql
+--   supabase/migrations/202607260006_seed_categories.sql
+--   supabase/migrations/202607260007_hardening_scoped_guests.sql
+--
+-- Read docs/08_DATABASE_SCHEMA_AND_RLS.md and docs/23_DATA_DICTIONARY_AND_RETENTION.md
+-- before changing the schema. Never apply a copied single-file schema to staging or
+-- production. Generate a new forward-only migration, add RLS/hostile tests in the
+-- same change, and run `supabase db reset && supabase test db` locally.
+--
+-- Canonical domain graph:
+--
+--   auth.users -> profiles -> circle_memberships -> circles
+--                                           circles -> asks -> ask_needs
+--                                           ask_needs -> offers -> commitments
+--                                           commitments -> conversations -> messages
+--                                           commitments -> loans -> loan_events
+--                                           successful offers/loans -> optional resources
+--
+-- Server-only/private data:
+--
+--   profile_contacts, exact_locations, share_links, ask_guest_grants,
+--   incident_evidence, moderator_access_grants, notification_jobs,
+--   outbox_events, audit_events, idempotency_records, inbound_channel_messages,
+--   ai_drafts, webhook_receipts.

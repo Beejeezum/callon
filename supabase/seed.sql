@@ -1,0 +1,2 @@
+-- Synthetic local-only fixtures are created by scripts/seed_local.ts after auth users exist.
+-- Never copy real HOA names, phone numbers, addresses, messages, or evidence into source control.

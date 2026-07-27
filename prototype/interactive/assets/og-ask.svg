@@ -1,0 +1,16 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#F5F1E8"/>
+  <circle cx="1040" cy="110" r="190" fill="#DDEBDF"/>
+  <circle cx="1080" cy="540" r="230" fill="#F8D9C9"/>
+  <rect x="80" y="68" width="1040" height="494" rx="48" fill="#FFFDF8" stroke="#D7D1C5" stroke-width="4"/>
+  <rect x="128" y="112" width="82" height="82" rx="24" fill="#22543D"/>
+  <path d="M151 139C151 133.477 155.477 129 161 129H177C182.523 129 187 133.477 187 139V151C187 156.523 182.523 161 177 161H170L160 170V161C154.477 161 151 156.523 151 151V139Z" fill="#F5F1E8"/>
+  <path d="M160 144H178" stroke="#22543D" stroke-width="4" stroke-linecap="round"/>
+  <path d="M160 152H171" stroke="#F27A58" stroke-width="4" stroke-linecap="round"/>
+  <text x="232" y="162" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#22543D">Call On</text>
+  <text x="128" y="260" font-family="Arial, sans-serif" font-size="58" font-weight="700" fill="#17241D">Bruce needs a 6-foot ladder</text>
+  <text x="128" y="326" font-family="Arial, sans-serif" font-size="36" fill="#526158">Saturday morning · Encanto Court</text>
+  <rect x="128" y="386" width="564" height="72" rx="36" fill="#22543D"/>
+  <text x="171" y="433" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#FFFDF8">Can you help?</text>
+  <text x="128" y="514" font-family="Arial, sans-serif" font-size="26" fill="#6F786F">Lend it, share advice, or suggest another way.</text>
+</svg>

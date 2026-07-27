@@ -1,0 +1,31 @@
+{
+  "name": "call-on",
+  "version": "0.2.0",
+  "private": true,
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @call-on/web dev",
+    "build": "pnpm --filter @call-on/web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @call-on/web test:e2e",
+    "check:client-bundle": "python3 scripts/check_client_bundle.py",
+    "verify": "python3 scripts/verify_bundle.py && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "db:start": "supabase start -x vector",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:lint": "python3 scripts/check_db_lint.py",
+    "db:test": "supabase test db",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "supabase": "2.109.1"
+  }
+}

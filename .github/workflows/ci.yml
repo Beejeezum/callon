@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.17.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - run: python3 scripts/check_repo_structure.py
+      - run: python3 scripts/delivery_audit.py
+      - run: python3 scripts/verify_bundle.py
+      - run: pnpm audit --audit-level high
+      - run: pnpm peers check
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm check:client-bundle
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: supabase/setup-cli@v2
+        with:
+          version: 2.109.1
+      - run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector
+      - run: supabase db reset
+      - run: python3 scripts/check_db_lint.py
+      - run: supabase test db
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [web]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.17.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @call-on/web exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
