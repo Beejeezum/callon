@@ -1,10 +1,10 @@
 {
   "product": "Call On",
   "handoff_version": "2.0",
-  "generated_at_utc": "2026-07-27T01:52:09+00:00",
+  "generated_at_utc": "2026-07-27T02:09:22+00:00",
   "root": "call-on",
-  "file_count_excluding_generated_manifests": 260,
-  "total_bytes_excluding_generated_manifests": 20007666,
+  "file_count_excluding_generated_manifests": 261,
+  "total_bytes_excluding_generated_manifests": 20010118,
   "generated_files_excluded_from_manifest_hash_set": [
     "MANIFEST.json",
     "MANIFEST.md",
@@ -35,7 +35,7 @@
     "prototype": 26,
     "runbooks": 11,
     "schemas": 2,
-    "scripts": 6,
+    "scripts": 7,
     "supabase": 11,
     "tasks": 11,
     "visuals": 31
@@ -63,8 +63,8 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "bytes": 1847,
-      "sha256": "a6bd1d1743770331f14f80b08228467f29617a22a6c33273874be1ed069132d9"
+      "bytes": 1951,
+      "sha256": "7b32e8987d18d49da5245fe4f5084a198af727af5215720a69d4370ac3a7cc03"
     },
     {
       "path": ".gitignore",
@@ -778,8 +778,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 969,
-      "sha256": "7eb092c9a8220946f426b4346771b82d1fa92aff48914a4b0167b7f241ea18d2"
+      "bytes": 1042,
+      "sha256": "5fdfeedd9fd8d47644d2dfed166388e9f53a269295d6de293b08c42825806dbf"
     },
     {
       "path": "packages/contracts/package.json",
@@ -1053,8 +1053,8 @@
     },
     {
       "path": "scripts/check_db_lint.py",
-      "bytes": 992,
-      "sha256": "f97d3682c3513c1d9c744b392fcce0c94721fc5ba15c4df949728b39ab05d678"
+      "bytes": 1992,
+      "sha256": "3efd6ccd0731e3e228564b523d4c1356020f2596beb02263366237f1e20d638d"
     },
     {
       "path": "scripts/check_repo_structure.py",
@@ -1070,6 +1070,11 @@
       "path": "scripts/generate_manifest.py",
       "bytes": 4755,
       "sha256": "5e8d7f4e880873f72a41d0220f3ca7241939e6da224a1592cfafd4c1ca7720fb"
+    },
+    {
+      "path": "scripts/test_check_db_lint.py",
+      "bytes": 1275,
+      "sha256": "6cf5b7bb94969696cd3fb49f5d0d4ee3f50c90bb525c964f8e4c3d7390c88fb5"
     },
     {
       "path": "scripts/verify_bundle.py",

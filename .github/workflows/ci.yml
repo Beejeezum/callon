@@ -48,6 +48,8 @@ jobs:
       - uses: supabase/setup-cli@v2
         with:
           version: 2.109.1
+      - name: Test database lint adapter
+        run: python3 -m unittest scripts/test_check_db_lint.py
       - run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector
       - run: supabase db reset
       - run: python3 scripts/check_db_lint.py
