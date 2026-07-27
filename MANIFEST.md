@@ -1,10 +1,10 @@
 # Call On Production Kit — Manifest
 
-Generated: `2026-07-27T02:09:22+00:00`
+Generated: `2026-07-27T02:12:37+00:00`
 
 - Handoff version: **2.0**
 - Files represented: **261** (generated manifest/checksum files excluded from their own hash set)
-- Payload size represented: **20,010,118 bytes**
+- Payload size represented: **20,010,835 bytes**
 
 ## Start here
 

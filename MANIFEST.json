@@ -1,10 +1,10 @@
 {
   "product": "Call On",
   "handoff_version": "2.0",
-  "generated_at_utc": "2026-07-27T02:09:22+00:00",
+  "generated_at_utc": "2026-07-27T02:12:37+00:00",
   "root": "call-on",
   "file_count_excluding_generated_manifests": 261,
-  "total_bytes_excluding_generated_manifests": 20010118,
+  "total_bytes_excluding_generated_manifests": 20010835,
   "generated_files_excluded_from_manifest_hash_set": [
     "MANIFEST.json",
     "MANIFEST.md",
@@ -1053,8 +1053,8 @@
     },
     {
       "path": "scripts/check_db_lint.py",
-      "bytes": 1992,
-      "sha256": "3efd6ccd0731e3e228564b523d4c1356020f2596beb02263366237f1e20d638d"
+      "bytes": 2083,
+      "sha256": "110ec5251869fa681c420ba35f3521674fc5534d13d7447dab65c4c998153d6b"
     },
     {
       "path": "scripts/check_repo_structure.py",
@@ -1073,8 +1073,8 @@
     },
     {
       "path": "scripts/test_check_db_lint.py",
-      "bytes": 1275,
-      "sha256": "6cf5b7bb94969696cd3fb49f5d0d4ee3f50c90bb525c964f8e4c3d7390c88fb5"
+      "bytes": 1901,
+      "sha256": "1e91b4dc7606cf6414d82143c7ba3395ee08e8b8528e33a724e9a3d58337ce14"
     },
     {
       "path": "scripts/verify_bundle.py",

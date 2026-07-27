@@ -55,7 +55,8 @@ def main() -> int:
     if result.returncode != 0:
         return result.returncode
 
-    status, issue_count = assess_lint_output(result.stdout)
+    combined_output = "\n".join(part for part in (result.stdout, result.stderr) if part)
+    status, issue_count = assess_lint_output(combined_output)
     if status == "issues":
         print(f"DB_LINT_INVALID: {issue_count} issue(s) found.", file=sys.stderr)
         return 1
