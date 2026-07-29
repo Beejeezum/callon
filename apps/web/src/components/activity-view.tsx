@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, HandHeart, Package, Plus } from "@phosphor-icons/react";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import type { ActivityData } from "@/server/user-queries";
 import { Badge, ButtonLink, Chip } from "./ui";
 
@@ -156,10 +157,10 @@ export function ActivityView({ data }: { data: ActivityData }) {
                       {loan.direction === "borrowed" ? "From" : "To"}{" "}
                       {loan.counterpartName}
                       {loan.dueAt
-                        ? ` · due ${new Intl.DateTimeFormat("en-US", {
+                        ? ` · due ${formatPaseosDateTime(loan.dueAt, {
                             month: "short",
                             day: "numeric",
-                          }).format(new Date(loan.dueAt))}`
+                          })}`
                         : ""}
                     </p>
                   </div>

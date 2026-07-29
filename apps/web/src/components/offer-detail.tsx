@@ -13,19 +13,14 @@ import {
 import type { Offer } from "@/lib/mock-data";
 import { useHydrated } from "@/lib/use-hydrated";
 import {
+  paseosDateTimeParts,
+  paseosLocalDateTimeToDate,
+} from "@/lib/paseos-time";
+import {
   acceptOfferAction,
   decideOfferAction,
 } from "@/server/transaction-actions";
 import { Avatar, Button, ButtonLink, Card, PrivacyCallout } from "./ui";
-
-function localParts(value: string) {
-  const date = new Date(value);
-  const pad = (part: number) => `${part}`.padStart(2, "0");
-  return {
-    date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
-    time: `${pad(date.getHours())}:${pad(date.getMinutes())}`,
-  };
-}
 
 export function OfferDetail({ offer }: { offer: Offer }) {
   const router = useRouter();
@@ -44,8 +39,11 @@ export function OfferDetail({ offer }: { offer: Offer }) {
       ).toISOString(),
     [initialStart],
   );
-  const startParts = useMemo(() => localParts(initialStart), [initialStart]);
-  const dueParts = useMemo(() => localParts(initialDue), [initialDue]);
+  const startParts = useMemo(
+    () => paseosDateTimeParts(initialStart),
+    [initialStart],
+  );
+  const dueParts = useMemo(() => paseosDateTimeParts(initialDue), [initialDue]);
   const [startDate, setStartDate] = useState(startParts.date);
   const [startTime, setStartTime] = useState(startParts.time);
   const [dueDate, setDueDate] = useState(dueParts.date);
@@ -59,13 +57,9 @@ export function OfferDetail({ offer }: { offer: Offer }) {
   async function accept() {
     setAccepting(true);
     setError("");
-    const startsAt = new Date(`${startDate}T${startTime}:00`);
-    const dueAt = new Date(`${dueDate}T${dueTime}:00`);
-    if (
-      Number.isNaN(startsAt.getTime()) ||
-      Number.isNaN(dueAt.getTime()) ||
-      startsAt >= dueAt
-    ) {
+    const startsAt = paseosLocalDateTimeToDate(startDate, startTime);
+    const dueAt = paseosLocalDateTimeToDate(dueDate, dueTime);
+    if (!startsAt || !dueAt || startsAt >= dueAt) {
       setError("Return time must be after the planned handoff.");
       setAccepting(false);
       return;

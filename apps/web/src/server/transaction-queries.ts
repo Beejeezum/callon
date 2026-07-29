@@ -6,18 +6,19 @@ import {
   offers as mockOffers,
 } from "@/lib/mock-data";
 import { isSupabaseConfigured } from "@/lib/public-env";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { decryptLocation, type ExactLocationPayload } from "./location-crypto";
 
 function dateTime(value: string | null) {
   if (!value) return "Coordinate privately";
-  return new Intl.DateTimeFormat("en-US", {
+  return formatPaseosDateTime(value, {
     weekday: "short",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(new Date(value));
+  });
 }
 
 export const getOffersForAsk = cache(
