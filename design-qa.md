@@ -26,11 +26,11 @@
 Primary evidence:
 
 - `artifacts/design-qa/home-comparison-pass2.png`
-- `artifacts/design-qa/paseos-demo-mobile-clean.png`
-- `artifacts/design-qa/paseos-demo-desktop.png`
-- `artifacts/design-qa/paseos-landing-mobile.png`
-- `artifacts/design-qa/paseos-landing-desktop-loaded.png`
-- `artifacts/design-qa/paseos-login-mobile.png`
+- `artifacts/design-qa/paseos-demo-mobile-clean.jpg`
+- `artifacts/design-qa/paseos-demo-desktop.jpg`
+- `artifacts/design-qa/paseos-landing-mobile.jpg`
+- `artifacts/design-qa/paseos-landing-desktop-loaded.jpg`
+- `artifacts/design-qa/paseos-login-mobile.jpg`
 
 The source home is a signed-in activity state; the public `/demo` capture is an
 explicit preview state and therefore includes a sample-data notice. The
