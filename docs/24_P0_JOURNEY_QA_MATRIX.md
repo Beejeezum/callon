@@ -1,7 +1,7 @@
 # P0 Journey and QA Matrix
 
-**Last verified:** 2026-07-26  
-**Scope:** Call On P0 against an isolated local Supabase project  
+**Last verified:** 2026-07-29
+**Scope:** Call On P0 against an isolated local Supabase project
 **Viewports:** iPhone 13 (`390 × 844`) and desktop Chromium (`1440 × 1024`)
 
 This matrix is the release evidence for the deterministic P0 product. It does
@@ -34,6 +34,7 @@ synthetic data set in both viewports.
 
 | Journey | Assertions |
 |---|---|
+| Public welcome and guide | The welcome page keeps one primary educational action; the public guide explains all five steps and privacy boundaries without requiring signup |
 | Signed-out guard and Circle activation | Private route redirects to login; passwordless OTP succeeds; first Circle is created; live home renders |
 | Ask creation and safe sharing | Natural-language entry; structured Need; timing and general location; publish; scoped share page; no exact location leakage |
 | Scoped guest contribution | A verified non-member offers an unlisted item; contact data remains private; no app installation or inventory setup |
@@ -49,7 +50,8 @@ synthetic data set in both viewports.
 | Suspended membership | Circle feed and create controls disappear; direct create route redirects; restoration returns normal access |
 | Cross-role privacy | Unrelated active member cannot read Commitment, address, messages, or private Offers while the Circle Ask remains visible |
 
-Current result: **16 of 16 browser tests pass**.
+Current result: **20 of 20 browser tests pass** across mobile and desktop
+Chromium, including the new public welcome/guide journey.
 
 ## Database and hostile authorization coverage
 
@@ -88,8 +90,10 @@ Fixes discovered by the accessibility pass:
 - Progress bars now have accessible names.
 - Muted helper text and violet status badges meet text-contrast requirements.
 
-Manual in-browser review also covers the login screen, authenticated dashboard,
-owner Ask detail, and the three-step Ask wizard. The internal design-system
+Manual in-browser review also covers the public welcome, public guide,
+invitation signup, email verification, login screen, authenticated dashboard,
+owner Ask detail, and the three-step Ask wizard. Accepted onboarding evidence
+is stored in `design/audits/2026-07-29-onboarding/`. The internal design-system
 route is no longer exposed in primary user navigation.
 
 ## Notification worker checks
@@ -116,4 +120,3 @@ route is no longer exposed in primary user navigation.
 - Enable real OTP and transactional email only after provider and abuse-control
   review.
 - Approve the pilot audience and incident-response owner.
-

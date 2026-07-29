@@ -2,7 +2,7 @@ import { AppShell } from "@/components/app-shell";
 import { AuthForm } from "@/components/auth-form";
 import Image from "next/image";
 import Link from "next/link";
-import { pilotCommunity } from "@/lib/pilot";
+
 export default async function LoginPage({
   searchParams,
 }: {
@@ -25,14 +25,14 @@ export default async function LoginPage({
             priority
           />
           <div>
-            <div className="eyebrow">Private to Paseos</div>
-            <strong>{pilotCommunity.attribution}</strong>
+            <div className="eyebrow">Paseos Community Sharing</div>
+            <strong>Private member sign in</strong>
           </div>
         </div>
         <AuthForm next={next} />
         <p className="help-text auth-help">
-          Not a member yet? Open the private Paseos invitation from WhatsApp or{" "}
-          <Link href="/">read how this works</Link>.
+          New here? Open Bruce’s private Paseos invitation from WhatsApp, or{" "}
+          <Link href="/guide">read the 60-second guide</Link>.
         </p>
       </div>
     </AppShell>

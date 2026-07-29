@@ -15,6 +15,27 @@ let commitmentUrl = "";
 let loanUrl = "";
 let memberAskUrl = "";
 
+test("public welcome and guide explain the product without signup overload", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Ask before you buy." }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "See how it works" }).click();
+  await expect(page).toHaveURL("/guide");
+  await expect(
+    page.getByRole("heading", {
+      name: "Borrow a thing. Meet a neighbor.",
+    }),
+  ).toBeVisible();
+  await expect(page.locator(".guide-step-list > li")).toHaveCount(5);
+  await expect(
+    page.getByText(/No app download, address, or item list/),
+  ).toBeVisible();
+  await expectNoSeriousAccessibilityViolations(page);
+});
+
 test("signed-out guard, requester creation, and safe shared Ask", async ({
   page,
 }, testInfo) => {
@@ -172,7 +193,6 @@ test("admin invite, join acceptance, restriction, and restoration", async ({
     inviteUrl,
     state.joiner.email,
     state.joiner.displayName,
-    state.circleName,
   );
   await expect(page.locator(".header-title")).toHaveText(state.circleName);
 

@@ -4,6 +4,7 @@ import { isSupabaseConfigured, publicEnv } from "@/lib/public-env";
 
 const publicPrefixes = [
   "/demo",
+  "/guide",
   "/login",
   "/join/",
   "/share/",

@@ -12,7 +12,8 @@ locally. Production service activation and pilot launch remain human-gated.
 | Area | Status | Evidence |
 |---|---|---|
 | Repository and toolchain | Complete | Node 24, pnpm 11, strict TypeScript, frozen lockfile, GitHub Actions, Netlify configuration |
-| Authentication | Complete locally | Passwordless verified email OTP, first/last-name capture, callback handling, SSR session refresh, private-route guards |
+| Authentication | Complete locally | Two-step passwordless verified email OTP, first/last-name capture, callback handling, SSR session refresh, private-route guards |
+| Public onboarding | Complete locally | Reduced Paseos welcome, public 60-second guide, native guide sharing, invitation-first signup, contextual privacy copy |
 | Circles and membership | Complete locally | Paseos instant-join invite, scoped guest grants, active/restricted/suspended states, operator-only Circle provisioning, admin controls |
 | Asks and Needs | Complete locally | Three-step creation, deterministic validation, publish, safe share links, owner/member-specific views |
 | Offers | Complete locally | Scoped guest and active-member contribution, unlisted items, private requester review, decline/withdraw foundations |
@@ -38,15 +39,16 @@ locally. Production service activation and pilot launch remain human-gated.
 - `pnpm check:client-bundle` — no server-only secret identifiers found in the
   browser bundle.
 - `pnpm format:check` — all tracked source and documentation are formatted.
-- Playwright real-data suite — **18 of 18** journeys pass across mobile and
+- Playwright real-data suite — **20 of 20** journeys pass across mobile and
   desktop Chromium.
 - Automated accessibility — representative journeys have zero serious or
   critical WCAG A/AA violations.
 - Notification endpoint — unauthorized request returns `401`; authorized mock
   batches drain to zero pending jobs with no failures.
-- Product Design QA — Paseos welcome, preview home, sign-in, and responsive
-  desktop states pass against the canonical visual direction on the approved
-  DreamCraftLabs HTTPS branch preview; evidence is in `design-qa.md`.
+- Product Design QA — public welcome, guide, invitation signup, email
+  verification, sign-in, first member home, and responsive desktop states pass
+  against the canonical visual direction. The current audit and accepted
+  screenshots are in `design/audits/2026-07-29-onboarding/`.
 
 The detailed role and journey evidence is in
 `docs/24_P0_JOURNEY_QA_MATRIX.md`.
@@ -65,8 +67,8 @@ untrusted deploy previews.
 
 ## Remaining human gates
 
-- Disconnect the GitHub repository from every non-DreamCraftLabs Netlify site,
-  then verify a branch deploy in DreamCraftLabs `callonapp`.
+- Verify the updated branch deploy in the approved DreamCraftLabs `callonapp`
+  project.
 - Review and merge the implementation pull request only after remote CI and the
   correct Netlify preview pass.
 - Create production service accounts and approve secret ownership.

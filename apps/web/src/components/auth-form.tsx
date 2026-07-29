@@ -10,13 +10,11 @@ export function AuthForm({
   join = false,
   next = "/",
   circleName = "your private Circle",
-  circleArea,
   inviteToken,
 }: {
   join?: boolean;
   next?: string;
   circleName?: string;
-  circleArea?: string;
   inviteToken?: string;
 }) {
   const router = useRouter();
@@ -74,25 +72,33 @@ export function AuthForm({
     router.refresh();
   }
 
+  const isJoinVerification = join && sent;
+
   return (
     <div className="content narrow auth-panel">
       <div className="eyebrow">
-        {join
-          ? `Private invitation · ${circleArea ?? "Paseos"}`
-          : "Paseos member access"}
+        {join ? `Step ${sent ? 2 : 1} of 2` : "Paseos member sign in"}
       </div>
       <h1 style={{ marginTop: 8 }}>
-        {join ? `Join ${circleName}` : "Welcome back, neighbor"}
+        {isJoinVerification
+          ? "Check your email"
+          : join
+            ? "Join your Paseos neighbors"
+            : sent
+              ? "Check your email"
+              : "Welcome back"}
       </h1>
       <p className="lede">
-        {join
-          ? "Tell neighbors who you are, then verify your email. This private invitation grants membership immediately."
-          : "We’ll email you a one-time code. No password to remember."}
+        {sent
+          ? `Enter the short code we sent to ${destinationHint}.`
+          : join
+            ? `Add your name and email to join ${circleName}.`
+            : "Enter your email and we’ll send a one-time code."}
       </p>
       {!sent ? (
         <div className="form-grid section">
           {join ? (
-            <div className="field-grid-2">
+            <div className="field-grid-2 compact-name-fields">
               <div className="field">
                 <label htmlFor="first-name">First name</label>
                 <input
@@ -102,7 +108,7 @@ export function AuthForm({
                   onChange={(event) => setFirstName(event.target.value)}
                   maxLength={50}
                   autoComplete="given-name"
-                  placeholder="Bruce"
+                  placeholder="First"
                 />
               </div>
               <div className="field">
@@ -114,7 +120,7 @@ export function AuthForm({
                   onChange={(event) => setLastName(event.target.value)}
                   maxLength={80}
                   autoComplete="family-name"
-                  placeholder="Pinchbeck"
+                  placeholder="Last"
                 />
               </div>
             </div>
@@ -131,8 +137,9 @@ export function AuthForm({
               autoComplete="email"
             />
             <span className="help-text">
-              Used for verification and important loan reminders only. Never
-              shown on Paseos pages.
+              {join
+                ? "Your email stays private."
+                : "No password needed. Your email stays private."}
             </span>
           </div>
           {error ? <div className="notice error">{error}</div> : null}
@@ -147,15 +154,14 @@ export function AuthForm({
             onClick={requestCode}
           >
             <EnvelopeSimple size={18} />
-            {pending ? "Sending…" : "Email my one-time code"}{" "}
-            <ArrowRight size={18} />
+            {pending ? "Sending…" : "Send my code"} <ArrowRight size={18} />
           </Button>
         </div>
       ) : (
         <div className="form-grid section">
           <div className="notice">
-            Code sent to <strong>{destinationHint}</strong>.
-            {mockMode ? " Use 000000 in this unconfigured preview." : ""}
+            <strong>Code sent.</strong>
+            {mockMode ? " Preview code: 000000." : " It may take a moment."}
           </div>
           <div className="field">
             <label htmlFor="otp">Six-digit code</label>
@@ -180,7 +186,7 @@ export function AuthForm({
             {pending
               ? "Verifying…"
               : join
-                ? `Verify and join ${circleName}`
+                ? "Verify & join"
                 : "Verify and continue"}
           </Button>
           <Button
@@ -193,15 +199,23 @@ export function AuthForm({
               setError("");
             }}
           >
-            Use a different contact
+            Change email
           </Button>
         </div>
       )}
       <div className="spacer-24" />
       <PrivacyCallout>
-        <LockKey size={20} /> We do not ask for your street address here. Pickup
-        details are shared privately only after a specific Offer is accepted.
+        <LockKey size={20} />{" "}
+        {join
+          ? "No address and no item list. Pickup details come later, only when a share is accepted."
+          : "Your email and pickup details stay off Paseos community pages."}
       </PrivacyCallout>
+      {join ? (
+        <p className="auth-guide-link">
+          Want the quick tour first?{" "}
+          <a href="/guide">Read the 60-second guide</a>.
+        </p>
+      ) : null}
     </div>
   );
 }

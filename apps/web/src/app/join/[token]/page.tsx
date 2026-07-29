@@ -25,15 +25,14 @@ export default async function JoinPage({
             priority
           />
           <div>
-            <div className="eyebrow">Neighbor-built for Paseos</div>
-            <strong>{pilotCommunity.attribution}</strong>
+            <div className="eyebrow">{pilotCommunity.name}</div>
+            <strong>Private neighbor invitation</strong>
           </div>
         </div>
         <AuthForm
           join
           next={isSupabaseConfigured ? "/" : "/demo"}
           circleName={preview.circleName}
-          circleArea={preview.generalArea}
           inviteToken={token}
         />
       </div>

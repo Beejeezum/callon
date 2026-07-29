@@ -1,33 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  HandHeart,
-  LockKey,
-  Package,
-  Sparkle,
-  UsersThree,
-} from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Sparkle } from "@phosphor-icons/react/dist/ssr";
 import { pilotCommunity } from "@/lib/pilot";
-import { ButtonLink, Card } from "./ui";
-
-const steps = [
-  {
-    icon: HandHeart,
-    title: "Ask",
-    copy: "Post one useful thing—a ladder, party table, advice, or a little help.",
-  },
-  {
-    icon: UsersThree,
-    title: "A neighbor offers",
-    copy: "Offers stay private, and it is always okay to pass this time.",
-  },
-  {
-    icon: Package,
-    title: "Keep track",
-    copy: "Pickup, return, and the little details live in one calm place.",
-  },
-];
+import { ButtonLink } from "./ui";
 
 export function PaseosLanding({ previewMode }: { previewMode: boolean }) {
   return (
@@ -52,56 +27,30 @@ export function PaseosLanding({ previewMode }: { previewMode: boolean }) {
       </section>
 
       <div className="content narrow paseos-welcome">
-        <div className="eyebrow">Welcome, neighbors</div>
-        <h2 className="paseos-display">Borrow a thing. Meet a neighbor.</h2>
-        <p className="lede">{pilotCommunity.welcomeMessage}</p>
+        <div className="eyebrow">A private sharing space for Paseos</div>
+        <h2 className="paseos-display">Ask before you buy.</h2>
+        <p className="lede">
+          Borrow useful things, offer a hand, and keep the pickup and return
+          details out of the group-chat shuffle.
+        </p>
 
-        <div className="stack-sm" style={{ marginTop: 22 }}>
-          <ButtonLink href="/login" full>
-            I’m already a member <ArrowRight size={18} />
+        <div className="stack-sm paseos-entry-actions">
+          <ButtonLink href="/guide" full>
+            See how it works <ArrowRight size={18} />
           </ButtonLink>
           {previewMode ? (
             <ButtonLink href="/demo" full variant="secondary">
-              Preview the Paseos app
+              Try the interactive preview
             </ButtonLink>
           ) : null}
+          <ButtonLink href="/login" full variant="neutral">
+            Member sign in
+          </ButtonLink>
         </div>
-        <p className="help-text" style={{ textAlign: "center", marginTop: 12 }}>
-          New here? Open the private Paseos invitation shared in WhatsApp. It
-          verifies your email and joins you right away.
+        <p className="help-text paseos-invite-note">
+          Joining for the first time? Use Bruce’s private Paseos link from
+          WhatsApp. It takes your name, email, and about a minute.
         </p>
-
-        <section className="section">
-          <h2>How it works</h2>
-          <div className="paseos-step-list">
-            {steps.map(({ icon: Icon, title, copy }, index) => (
-              <div className="paseos-step" key={title}>
-                <span className="paseos-step-number">{index + 1}</span>
-                <span className="choice-icon">
-                  <Icon size={21} weight="duotone" />
-                </span>
-                <div>
-                  <h3>{title}</h3>
-                  <p className="muted small">{copy}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <Card className="pad soft section">
-          <div className="row-start">
-            <LockKey size={23} weight="duotone" color="var(--green-700)" />
-            <div>
-              <h3>Private to Paseos</h3>
-              <p className="muted small" style={{ marginBottom: 0 }}>
-                Your email is never shown to neighbors. Street addresses are
-                requested only after an Offer is accepted and pickup details
-                actually matter.
-              </p>
-            </div>
-          </div>
-        </Card>
 
         <footer className="paseos-footer">
           <strong>{pilotCommunity.attribution}</strong>
@@ -109,7 +58,11 @@ export function PaseosLanding({ previewMode }: { previewMode: boolean }) {
             This is an independent neighborhood project, not an official HOA
             service.
           </span>
-          <Link href="/login">Member sign in</Link>
+          <span className="row centered wrap">
+            <Link href="/guide">How it works</Link>
+            <span aria-hidden>·</span>
+            <Link href="/login">Member sign in</Link>
+          </span>
         </footer>
       </div>
     </div>

@@ -54,7 +54,7 @@ export async function signInWithEmailOtp(
   await page.context().clearCookies();
   await page.goto(`/login?next=${encodeURIComponent(next)}`);
   await page.getByLabel("Email address").fill(email);
-  await page.getByRole("button", { name: "Email my one-time code" }).click();
+  await page.getByRole("button", { name: "Send my code" }).click();
   await page.getByLabel("Six-digit code").waitFor();
 
   const supabase = await testAdmin();
@@ -104,7 +104,6 @@ export async function joinWithEmailOtp(
   inviteUrl: string,
   email: string,
   displayName: string,
-  circleName: string,
 ) {
   await page.context().clearCookies();
   await page.goto(inviteUrl);
@@ -114,7 +113,7 @@ export async function joinWithEmailOtp(
     .getByLabel("Last name")
     .fill(lastNameParts.join(" ") || "Neighbor");
   await page.getByLabel("Email address").fill(email);
-  await page.getByRole("button", { name: "Email my one-time code" }).click();
+  await page.getByRole("button", { name: "Send my code" }).click();
   await page.getByLabel("Six-digit code").waitFor();
 
   const supabase = await testAdmin();
@@ -125,9 +124,7 @@ export async function joinWithEmailOtp(
   const otp = data.properties?.email_otp;
   if (error || !otp) throw error ?? new Error("Could not generate test OTP.");
   await page.getByLabel("Six-digit code").fill(otp);
-  await page
-    .getByRole("button", { name: `Verify and join ${circleName}` })
-    .click();
+  await page.getByRole("button", { name: "Verify & join" }).click();
   await expect(page).toHaveURL((url) => url.pathname === "/");
 }
 

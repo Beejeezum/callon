@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, LockKey } from "@phosphor-icons/react";
+import { CheckCircle } from "@phosphor-icons/react";
 import { acceptCircleInviteAction } from "@/server/circle-actions";
-import { Button, Card, PrivacyCallout } from "./ui";
+import { Button, Card } from "./ui";
 
 export function JoinInvitation({
   token,
@@ -40,27 +40,18 @@ export function JoinInvitation({
 
   return (
     <div className="content narrow" style={{ paddingTop: 40 }}>
-      <div className="eyebrow">Verified invitation</div>
-      <h1 style={{ marginTop: 8 }}>Join {circleName}</h1>
+      <div className="eyebrow">One last step</div>
+      <h1 style={{ marginTop: 8 }}>Your invitation is verified</h1>
       <p className="lede">
-        {description || `A private neighbor Circle in ${generalArea}.`}
+        Join {circleName} to start asking, lending, and helping your neighbors.
       </p>
-      <Card className="pad section">
-        <div className="stack">
-          <div className="row-start">
-            <CheckCircle size={22} color="var(--green-600)" weight="fill" />
-            <div>
-              <div className="strong small">Invitation-only membership</div>
-              <div className="tiny muted">{generalArea}</div>
-            </div>
-          </div>
-          <div className="row-start">
-            <LockKey size={22} color="var(--green-600)" weight="duotone" />
-            <div>
-              <div className="strong small">Private by default</div>
-              <div className="tiny muted">
-                Contact details and exact locations stay outside Circle pages.
-              </div>
+      <Card className="pad section compact-confirmation-card">
+        <div className="row-start">
+          <CheckCircle size={22} color="var(--green-600)" weight="fill" />
+          <div>
+            <div className="strong small">{circleName}</div>
+            <div className="tiny muted">
+              {description || `Private community sharing in ${generalArea}.`}
             </div>
           </div>
         </div>
@@ -69,11 +60,9 @@ export function JoinInvitation({
       <Button full disabled={pending} onClick={accept}>
         {pending ? "Joining…" : `Join ${circleName}`}
       </Button>
-      <div className="spacer-24" />
-      <PrivacyCallout>
-        Joining does not make an inventory, announce your possessions, or commit
-        you to lending anything.
-      </PrivacyCallout>
+      <p className="auth-footnote">
+        You decide what to share. Joining never commits you to lending anything.
+      </p>
     </div>
   );
 }

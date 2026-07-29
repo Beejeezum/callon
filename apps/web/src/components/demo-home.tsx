@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  HandHeart,
+  Info,
   Package,
   Plus,
 } from "@phosphor-icons/react/dist/ssr";
@@ -69,18 +69,19 @@ export function DemoHome({
       </section>
 
       <section className="section">
-        <Card className="pad soft">
+        <Card className="pad soft guide-prompt-card">
           <div className="row-start">
             <div className="choice-icon">
-              <HandHeart size={22} weight="duotone" />
+              <Info size={22} weight="duotone" />
             </div>
             <div>
-              <h3>List nothing—or just one useful thing</h3>
+              <h3>New to Call On?</h3>
               <p className="muted small" style={{ marginBottom: 0 }}>
-                Inventory is optional. Add common items quickly, offer something
-                unlisted when a neighbor asks, or save it after a successful
-                share.
+                See the whole Ask → Offer → Return loop in about a minute.
               </p>
+              <Link href="/guide" className="guide-prompt-link">
+                Read the quick guide <ArrowRight size={15} />
+              </Link>
             </div>
           </div>
         </Card>
