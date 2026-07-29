@@ -9,17 +9,17 @@ import {
   Bell,
   ChatCircle,
   CirclesThreePlus,
-  HandHeart,
   House,
   ListChecks,
+  Package,
   Plus,
   UserCircle,
 } from "@phosphor-icons/react";
-import { currentCircle } from "@/lib/mock-data";
+import { isSupabaseConfigured } from "@/lib/public-env";
 
 const nav = [
   { href: "/", label: "Home", icon: House },
-  { href: "/activity", label: "Asks", icon: ListChecks },
+  { href: "/library", label: "Library", icon: Package },
   { href: "/asks/new", label: "Create", icon: Plus, create: true },
   { href: "/inbox", label: "Inbox", icon: ChatCircle },
   { href: "/profile", label: "Me", icon: UserCircle },
@@ -34,10 +34,14 @@ export function AppShell({
   children,
   hideNav = false,
   publicMode = false,
+  circleName = "Your private Circle",
+  canCreate = true,
 }: {
   children: ReactNode;
   hideNav?: boolean;
   publicMode?: boolean;
+  circleName?: string;
+  canCreate?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -56,9 +60,7 @@ export function AppShell({
             />
             <span className="brand-name">Call On</span>
           </Link>
-          <p className="brand-tagline">
-            Things we have. Neighbors we trust. Real projects made easier.
-          </p>
+          <p className="brand-tagline">Neighbor-built sharing for Paseos.</p>
           <nav className="rail-nav">
             <Link
               className="rail-link"
@@ -69,18 +71,27 @@ export function AppShell({
             </Link>
             <Link
               className="rail-link"
+              href="/library"
+              data-active={matches(pathname, "/library")}
+            >
+              <Package size={20} weight="duotone" /> Paseos library
+            </Link>
+            <Link
+              className="rail-link"
               href="/activity"
               data-active={matches(pathname, "/activity")}
             >
               <ListChecks size={20} weight="duotone" /> My activity
             </Link>
-            <Link
-              className="rail-link"
-              href="/asks/new"
-              data-active={matches(pathname, "/asks/new")}
-            >
-              <CirclesThreePlus size={20} weight="duotone" /> Create an Ask
-            </Link>
+            {canCreate ? (
+              <Link
+                className="rail-link"
+                href="/asks/new"
+                data-active={matches(pathname, "/asks/new")}
+              >
+                <CirclesThreePlus size={20} weight="duotone" /> Create an Ask
+              </Link>
+            ) : null}
             <Link
               className="rail-link"
               href="/inbox"
@@ -95,18 +106,12 @@ export function AppShell({
             >
               <UserCircle size={20} weight="duotone" /> Profile
             </Link>
-            <Link
-              className="rail-link"
-              href="/design-system"
-              data-active={matches(pathname, "/design-system")}
-            >
-              <HandHeart size={20} weight="duotone" /> Design system
-            </Link>
           </nav>
           <div className="rail-footer">
-            <strong>{currentCircle.name}</strong>
+            <strong>{circleName}</strong>
             <br />
-            Private pilot · Mock mode
+            Private pilot ·{" "}
+            {isSupabaseConfigured ? "Live data" : "Preview mode"}
             <br />
             Exact pickup details stay private until an offer is accepted.
           </div>
@@ -119,31 +124,33 @@ export function AppShell({
             className="bottom-nav mobile-only"
             aria-label="Primary mobile navigation"
           >
-            {nav.map(({ href, label, icon: Icon, create }) => (
-              <Link
-                className="bottom-link"
-                href={href}
-                key={href}
-                data-active={matches(pathname, href)}
-                aria-label={label}
-              >
-                {create ? (
-                  <span className="bottom-create">
-                    <Icon size={25} weight="bold" />
-                  </span>
-                ) : (
-                  <Icon
-                    size={21}
-                    weight={matches(pathname, href) ? "fill" : "regular"}
-                  />
-                )}
-                {!create ? (
-                  <span>{label}</span>
-                ) : (
-                  <span className="sr-only">{label}</span>
-                )}
-              </Link>
-            ))}
+            {nav
+              .filter((item) => canCreate || !item.create)
+              .map(({ href, label, icon: Icon, create }) => (
+                <Link
+                  className="bottom-link"
+                  href={href}
+                  key={href}
+                  data-active={matches(pathname, href)}
+                  aria-label={label}
+                >
+                  {create ? (
+                    <span className="bottom-create">
+                      <Icon size={25} weight="bold" />
+                    </span>
+                  ) : (
+                    <Icon
+                      size={21}
+                      weight={matches(pathname, href) ? "fill" : "regular"}
+                    />
+                  )}
+                  {!create ? (
+                    <span>{label}</span>
+                  ) : (
+                    <span className="sr-only">{label}</span>
+                  )}
+                </Link>
+              ))}
           </nav>
         ) : null}
       </main>
@@ -200,12 +207,8 @@ export function MobileHeader({
 
 function AvatarCircle() {
   return (
-    <Image
-      className="circle-avatar"
-      src="/assets/avatar-lisa.png"
-      alt=""
-      width={30}
-      height={30}
-    />
+    <span className="circle-avatar" aria-hidden>
+      <UserCircle size={28} weight="duotone" />
+    </span>
   );
 }

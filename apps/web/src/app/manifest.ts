@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Call On",
-    short_name: "Call On",
+    name: "Paseos Community Sharing",
+    short_name: "Paseos",
     description:
-      "Ask for what you need and coordinate private neighborhood help.",
+      "A private, neighbor-built place for Paseos residents to ask, share, and keep handoffs easy.",
     start_url: "/",
     display: "standalone",
     background_color: "#f8f6f0",

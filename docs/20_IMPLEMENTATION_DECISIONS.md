@@ -127,6 +127,58 @@ separate human gates.
 must never receive production Supabase or provider credentials.
 **Files/PR:** `netlify.toml`, deployment documentation, health metadata.
 
+## ADR-017 — Paseos is invite-first; Circle provisioning is operator-controlled
+
+**Date:** 2026-07-29
+**Status:** accepted
+**Decision:** A verified Paseos launch invite grants immediate active membership.
+Verified guests may contribute only to the shared Ask. Ordinary authenticated
+users cannot self-provision a Circle; approved communities are created through
+the service-role-only `provision_circle` transaction.
+**Context:** The Paseos pilot needs an easy WhatsApp join path without making
+the community or member inventory public. Open Circle creation would also
+bypass moderation ownership, launch readiness, and tenant provisioning review.
+**Alternatives:** Open signup with later Circle selection; public Ask creation;
+automatic address verification; administrator approval for every Paseos join.
+**Consequences:** Signup captures first name, last name, and verified email.
+Street address is deferred to an accepted transaction. The Paseos administrator
+can revoke launch links, moderate memberships, and appoint moderators. A future
+community application workflow creates no data-plane Circle before operator
+approval.
+**Security/privacy impact:** Invite secrets are hashed, guest grants are
+Ask-scoped, exact addresses remain party-private, and arbitrary authenticated
+Circle creation is revoked at the database privilege boundary.
+**Files/PR:** `docs/25_PASEOS_PILOT_MEMBERSHIP_ADMIN_AND_LAUNCH.md`,
+`supabase/migrations/202607290013_paseos_membership_library_admin.sql`,
+Paseos auth/admin/library routes.
+
+## ADR-018 — Progressive disclosure across welcome, guide, and signup
+
+**Date:** 2026-07-29
+**Status:** accepted
+**Decision:** The public welcome page makes the core promise and routes detailed
+education to a separate public 60-second guide. Invitation signup collects only
+first name, last name, and verified email in two short steps. Address and
+inventory details remain deferred until a real transaction or voluntary item
+listing makes them useful.
+**Context:** The original welcome and signup surfaces each repeated the product
+model, privacy rules, and onboarding explanation. That created avoidable reading
+before a neighbor could understand or join the Paseos pilot.
+**Alternatives:** Keep the full walkthrough on the landing page; require a
+multi-screen product tour before signup; ask new members to add an address or
+inventory during onboarding.
+**Consequences:** `/guide` is a stable WhatsApp-shareable explanation. The
+welcome page, invitation form, verification step, and first member home each
+serve one primary job.
+**Security/privacy impact:** No authorization or persistence change. The
+interface explicitly preserves email privacy and confirms that exact pickup
+details and inventory are not required at signup.
+**Files/PR:** `apps/web/src/app/guide`,
+`apps/web/src/components/call-on-guide.tsx`,
+`apps/web/src/components/paseos-landing.tsx`,
+`apps/web/src/components/auth-form.tsx`,
+`design/audits/2026-07-29-onboarding`.
+
 ## ADR template
 
 ```md

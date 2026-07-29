@@ -1,4 +1,4 @@
-> **Production Handoff v2 override (2026-07-26):** This original PRD is preserved for complete product rationale. When it conflicts with `AGENTS.md`, `docs/00_EXECUTIVE_DECISIONS.md`, or another numbered v2 specialization document, the v2 document wins. In particular, the production recommendation is now Vercel rather than Netlify, and the canonical UI is `visuals/00_CANONICAL_UI_DIRECTION.png`.
+> **Production Handoff v2 override (updated 2026-07-29):** This original PRD is preserved for complete product rationale. When it conflicts with `AGENTS.md`, `docs/00_EXECUTIVE_DECISIONS.md`, or another numbered v2 specialization document, the v2 document wins. The selected deployment platform is Netlify (ADR-016), the Paseos pilot rules are in `docs/25_PASEOS_PILOT_MEMBERSHIP_ADMIN_AND_LAUNCH.md`, and the canonical UI is `visuals/00_CANONICAL_UI_DIRECTION.png`.
 
 # Call On — Product Requirements Document
 
@@ -3078,4 +3078,3 @@ Before production coding reaches sensitive areas, create:
 8. Incident-response playbook.
 9. Legal review checklist.
 10. Technical architecture decision records.
-

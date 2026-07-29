@@ -3,10 +3,18 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FunnelSimple, HandHeart } from "@phosphor-icons/react";
-import { offers } from "@/lib/mock-data";
+import type { Need, Offer } from "@/lib/mock-data";
 import { Avatar, ButtonLink, Chip } from "./ui";
 
-export function OffersList({ askId }: { askId: string }) {
+export function OffersList({
+  askId,
+  offers,
+  needs,
+}: {
+  askId: string;
+  offers: Offer[];
+  needs: Need[];
+}) {
   const [filter, setFilter] = useState("All");
   const visible = useMemo(
     () =>
@@ -15,7 +23,7 @@ export function OffersList({ askId }: { askId: string }) {
           offer.askId === askId &&
           (filter === "All" || offer.needId === filter),
       ),
-    [askId, filter],
+    [askId, filter, offers],
   );
 
   return (
@@ -34,10 +42,10 @@ export function OffersList({ askId }: { askId: string }) {
       <div className="chip-row" style={{ marginTop: 16 }}>
         {[
           { id: "All", label: "All" },
-          { id: "tables", label: "Tables" },
-          { id: "cooler", label: "Cooler" },
-          { id: "setup", label: "Setup" },
-          { id: "canopy", label: "Canopy" },
+          ...needs.map((need) => ({
+            id: need.id,
+            label: need.title,
+          })),
         ].map((item) => (
           <button
             className="chip"
@@ -62,7 +70,10 @@ export function OffersList({ askId }: { askId: string }) {
               <div className="offer-name">{offer.name}</div>
               <div className="offer-message">{offer.message}</div>
               <div className="factual-history">
-                <HandHeart size={13} /> {offer.completedShares} completed shares
+                <HandHeart size={13} />{" "}
+                {offer.completedShares
+                  ? `${offer.completedShares} completed shares`
+                  : "Verified neighbor"}
               </div>
             </div>
             <span className="offer-time">{offer.receivedLabel}</span>
@@ -81,11 +92,11 @@ export function OffersList({ askId }: { askId: string }) {
         </div>
       ) : null}
       <div className="spacer-24" />
-      <ButtonLink href="/share/oakridge-birthday-demo" variant="secondary" full>
+      <ButtonLink href={`/asks/${askId}`} variant="secondary" full>
         Still need help? Share Ask again
       </ButtonLink>
       <div style={{ marginTop: 10 }}>
-        <Chip tone="green">4 private offers</Chip>
+        <Chip tone="green">{visible.length} private offers</Chip>
       </div>
     </div>
   );

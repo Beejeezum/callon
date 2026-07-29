@@ -121,6 +121,7 @@ export function Progress({
       <div
         className="progress-track"
         role="progressbar"
+        aria-label={label ?? "Ask fulfillment progress"}
         aria-valuenow={value}
         aria-valuemin={0}
         aria-valuemax={100}

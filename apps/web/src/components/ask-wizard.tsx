@@ -19,6 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import { useHydrated } from "@/lib/use-hydrated";
 import { Button } from "./ui";
+import { createAndPublishAskAction } from "@/server/ask-actions";
 
 const kindOptions = [
   {
@@ -55,36 +56,61 @@ type NeedDraft = {
 };
 
 const initialNeeds: NeedDraft[] = [
-  { id: "need-1", title: "2 folding tables", quantity: 2, kind: "lend" },
-  { id: "need-2", title: "1 large cooler", quantity: 1, kind: "lend" },
-  { id: "need-3", title: "Pop-up canopy", quantity: 1, kind: "lend" },
-  { id: "need-4", title: "Help setting up", quantity: 1, kind: "help" },
+  { id: "need-1", title: "", quantity: 1, kind: "lend" },
 ];
 
-export function AskWizard() {
+function localDateTimeParts(value: string) {
+  const date = new Date(value);
+  const pad = (part: number) => `${part}`.padStart(2, "0");
+  return {
+    date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
+    time: `${pad(date.getHours())}:00`,
+  };
+}
+
+export function AskWizard({
+  circleId,
+  minimumNeededAt,
+  suggestedNeededAt,
+}: {
+  circleId: string;
+  minimumNeededAt: string;
+  suggestedNeededAt: string;
+}) {
   const router = useRouter();
   const hydrated = useHydrated();
+  const suggested = useMemo(
+    () => localDateTimeParts(suggestedNeededAt),
+    [suggestedNeededAt],
+  );
   const [step, setStep] = useState(1);
-  const [context, setContext] = useState(
-    "I’m hosting a birthday party Saturday and need some equipment.",
-  );
-  const [title, setTitle] = useState("Hosting a birthday party 🎉");
+  const [context, setContext] = useState("");
+  const [title, setTitle] = useState("");
   const [needs, setNeeds] = useState<NeedDraft[]>(initialNeeds);
-  const [generalLocation, setGeneralLocation] = useState(
-    "Oakridge clubhouse area",
-  );
-  const [date, setDate] = useState("2026-08-01");
-  const [time, setTime] = useState("14:00");
-  const [notes, setNotes] = useState(
-    "Backyard party for about 20 people. Exact pickup details will be shared privately after an offer is accepted.",
-  );
+  const [generalLocation, setGeneralLocation] = useState("");
+  const [date, setDate] = useState(suggested.date);
+  const [time, setTime] = useState(suggested.time);
+  const [notes, setNotes] = useState("");
   const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   const canContinue = useMemo(
     () =>
-      context.trim().length >= 10 && needs.some((need) => need.title.trim()),
-    [context, needs],
+      context.trim().length >= 10 &&
+      needs.some((need) => need.title.trim()) &&
+      title.trim().length >= 3,
+    [context, needs, title],
   );
+  const canReview = useMemo(() => {
+    const neededBy = new Date(`${date}T${time}:00`);
+    return (
+      generalLocation.trim().length >= 2 &&
+      Boolean(minimumNeededAt) &&
+      !Number.isNaN(neededBy.getTime()) &&
+      neededBy >= new Date(minimumNeededAt)
+    );
+  }, [date, generalLocation, minimumNeededAt, time]);
 
   function updateNeed(id: string, patch: Partial<NeedDraft>) {
     setNeeds((current) =>
@@ -110,8 +136,38 @@ export function AskWizard() {
 
   async function publish() {
     setPublishing(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    router.push("/share/oakridge-birthday-demo");
+    setPublishError("");
+    const neededBy = new Date(`${date}T${time}:00`);
+    if (Number.isNaN(neededBy.getTime()) || neededBy <= new Date()) {
+      setPublishError("Choose a future date and time.");
+      setPublishing(false);
+      return;
+    }
+    const result = await createAndPublishAskAction({
+      circleId,
+      title,
+      description: `${context.trim()}\n\n${notes.trim()}`.trim(),
+      generalLocation,
+      neededBy: neededBy.toISOString(),
+      startsAt: neededBy.toISOString(),
+      needs: needs
+        .filter((need) => need.title.trim())
+        .map((need) => ({
+          kind: need.kind,
+          title: need.title,
+          description: "",
+          quantityRequested: need.quantity,
+          unit: need.kind === "lend" ? "item" : "contribution",
+          riskLevel: "low",
+        })),
+      idempotencyKey,
+    });
+    setPublishing(false);
+    if (!result.ok) {
+      setPublishError(result.error.message);
+      return;
+    }
+    router.push(`/share/${result.data.shareToken}`);
   }
 
   return (
@@ -155,6 +211,7 @@ export function AskWizard() {
                 value={context}
                 onChange={(event) => setContext(event.target.value)}
                 maxLength={500}
+                placeholder="e.g. I’m putting up garage shelves this weekend and need a couple of things."
               />
               <div className="row-between help-text">
                 <span>Specific and informal works best.</span>
@@ -169,6 +226,7 @@ export function AskWizard() {
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 maxLength={120}
+                placeholder="e.g. Putting up garage shelves"
               />
             </div>
             <div className="field">
@@ -296,6 +354,7 @@ export function AskWizard() {
                   id="need-date"
                   className="input"
                   type="date"
+                  min={minimumNeededAt.slice(0, 10)}
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
                 />
@@ -351,7 +410,7 @@ export function AskWizard() {
             </div>
           </div>
           <div className="spacer-24" />
-          <Button full onClick={() => setStep(3)}>
+          <Button full disabled={!canReview} onClick={() => setStep(3)}>
             Review Ask
           </Button>
         </section>
@@ -408,6 +467,11 @@ export function AskWizard() {
             </span>
           </div>
           <div className="spacer-24" />
+          {publishError ? (
+            <div className="notice error" style={{ marginBottom: 12 }}>
+              {publishError}
+            </div>
+          ) : null}
           <Button full onClick={publish} disabled={publishing}>
             {publishing ? "Publishing…" : "Publish and share"}
           </Button>

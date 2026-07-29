@@ -13,6 +13,7 @@ export type Ask = {
   description: string;
   label: "Need help" | "Offering" | "Event";
   dateLabel: string;
+  neededBy?: string;
   generalLocation: string;
   progress: number;
   image?: string;
@@ -24,7 +25,7 @@ export type Offer = {
   askId: string;
   needId: string;
   name: string;
-  avatar: string;
+  avatar?: string;
   message: string;
   detail: string;
   itemName?: string;
@@ -33,12 +34,15 @@ export type Offer = {
   generalLocation: string;
   completedShares: number;
   receivedLabel: string;
+  status?: string;
+  neededBy?: string;
+  submittedAt?: string;
 };
 
 export const currentCircle = {
   id: "b0b08438-1234-4a2d-9ea2-2a88f3f47001",
-  name: "Oakridge HOA",
-  generalArea: "Oakridge community",
+  name: "Paseos Community Sharing",
+  generalArea: "Paseos · Boca Raton, Florida",
   memberName: "Emily",
 };
 
@@ -49,7 +53,7 @@ export const asks: Ask[] = [
     description: "Need a few things for our backyard party.",
     label: "Need help",
     dateLabel: "Sat, May 25 · 2:00 PM",
-    generalLocation: "Oakridge clubhouse area",
+    generalLocation: "Paseos clubhouse area",
     progress: 75,
     image: "/assets/birthday-party.jpg",
     needs: [
@@ -92,7 +96,7 @@ export const asks: Ask[] = [
     description: "Available this weekend.",
     label: "Offering",
     dateLabel: "This weekend",
-    generalLocation: "Near Maple Dr",
+    generalLocation: "North side of Paseos",
     progress: 0,
     image: "/assets/pressure-washer.jpg",
     needs: [],
@@ -103,7 +107,7 @@ export const asks: Ask[] = [
     description: "Bring clean items, tables and price labels.",
     label: "Event",
     dateLabel: "Sun, May 26 · 8:00 AM",
-    generalLocation: "Oakridge clubhouse",
+    generalLocation: "Paseos clubhouse",
     progress: 0,
     needs: [],
   },
@@ -121,7 +125,7 @@ export const offers: Offer[] = [
     itemName: "2 folding tables",
     quantity: 2,
     availability: "Friday after 6 PM or Saturday before noon",
-    generalLocation: "North side of Oakridge",
+    generalLocation: "North side of Paseos",
     completedShares: 12,
     receivedLabel: "Just now",
   },
@@ -136,7 +140,7 @@ export const offers: Offer[] = [
     itemName: "Large cooler",
     quantity: 1,
     availability: "Friday evening",
-    generalLocation: "West side of Oakridge",
+    generalLocation: "West side of Paseos",
     completedShares: 8,
     receivedLabel: "5m",
   },
@@ -149,7 +153,7 @@ export const offers: Offer[] = [
     message: "I can help set up around 1:00 PM.",
     detail: "Happy to help move tables and set up the canopy.",
     availability: "Saturday 1:00–1:45 PM",
-    generalLocation: "Oakridge",
+    generalLocation: "Paseos",
     completedShares: 5,
     receivedLabel: "18m",
   },
@@ -164,7 +168,7 @@ export const offers: Offer[] = [
     itemName: "10×10 pop-up canopy",
     quantity: 1,
     availability: "Saturday morning",
-    generalLocation: "South side of Oakridge",
+    generalLocation: "South side of Paseos",
     completedShares: 9,
     receivedLabel: "25m",
   },

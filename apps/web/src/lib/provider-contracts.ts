@@ -1,5 +1,5 @@
 export type NotificationMessage = {
-  toProfileId: string;
+  toEmail: string;
   template: string;
   variables: Record<string, string | number | boolean | null>;
   idempotencyKey: string;

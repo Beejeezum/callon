@@ -138,6 +138,7 @@ After a successful physical lend:
 
 ```text
 /                         authenticated home or public landing decision
+/guide                    public 60-second product and privacy guide
 /login                    OTP/magic-link entry
 /auth/callback            provider callback
 /join/[token]             invitation acceptance

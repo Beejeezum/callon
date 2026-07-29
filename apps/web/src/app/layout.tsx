@@ -3,15 +3,18 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Call On", template: "%s · Call On" },
+  title: {
+    default: "Paseos Community Sharing",
+    template: "%s · Paseos Community Sharing",
+  },
   description:
-    "Ask for what you need, share what you have, and make real neighborhood projects easier.",
+    "A private, neighbor-built way for Paseos residents to ask, share useful things, and keep handoffs and returns easy.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ??
       process.env.DEPLOY_PRIME_URL ??
       "http://localhost:3000",
   ),
-  applicationName: "Call On",
+  applicationName: "Paseos Community Sharing",
   robots: { index: false, follow: false },
 };
 

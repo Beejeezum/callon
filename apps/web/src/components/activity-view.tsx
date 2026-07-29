@@ -4,12 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, HandHeart, Package, Plus } from "@phosphor-icons/react";
-import { savedResources } from "@/lib/mock-data";
+import type { ActivityData } from "@/server/user-queries";
 import { Badge, ButtonLink, Chip } from "./ui";
 
 const tabs = ["My Asks", "My Offers", "Loans", "Saved items"] as const;
 
-export function ActivityView() {
+function statusLabel(status: string) {
+  return status.replaceAll("_", " ");
+}
+
+export function ActivityView({ data }: { data: ActivityData }) {
   const [tab, setTab] = useState<(typeof tabs)[number]>("My Asks");
 
   return (
@@ -18,7 +22,8 @@ export function ActivityView() {
         <div>
           <h1>My activity</h1>
           <p className="lede">
-            Everything you have asked, offered, borrowed, or chosen to remember.
+            Everything you have asked, offered, borrowed, lent, or chosen to
+            remember.
           </p>
         </div>
         <ButtonLink href="/asks/new" small>
@@ -40,131 +45,192 @@ export function ActivityView() {
       <div className="spacer-16" />
 
       {tab === "My Asks" ? (
-        <div className="stack-sm">
-          <Link href="/asks/birthday-party" className="card pad interactive">
-            <div className="row-between">
-              <Badge tone="need">Open</Badge>
-              <Chip tone="green">3 of 4 covered</Chip>
-            </div>
-            <h3 style={{ marginTop: 12 }}>Hosting a birthday party 🎉</h3>
-            <p className="muted small">Sat, May 25 · 4 private offers</p>
-          </Link>
-          <div className="card pad">
-            <div className="row-between">
-              <Badge tone="event">Complete</Badge>
-              <span className="tiny muted">May 10</span>
-            </div>
-            <h3 style={{ marginTop: 12 }}>Neighborhood movie night</h3>
-            <p className="muted small" style={{ margin: 0 }}>
-              Projector, screen, two tables, and setup help were covered.
-            </p>
+        data.asks.length ? (
+          <div className="stack-sm">
+            {data.asks.map((ask) => (
+              <Link
+                href={`/asks/${ask.id}`}
+                className="card pad interactive"
+                key={ask.id}
+              >
+                <div className="row-between">
+                  <Badge
+                    tone={
+                      ask.status === "completed" || ask.status === "archived"
+                        ? "event"
+                        : "need"
+                    }
+                  >
+                    {statusLabel(ask.status)}
+                  </Badge>
+                  <Chip tone="green">
+                    {ask.coveredNeeds} of {ask.totalNeeds} covered
+                  </Chip>
+                </div>
+                <h3 style={{ marginTop: 12 }}>{ask.title}</h3>
+                <p className="muted small" style={{ margin: 0 }}>
+                  {ask.neededBy} · {ask.offerCount} private{" "}
+                  {ask.offerCount === 1 ? "Offer" : "Offers"}
+                </p>
+              </Link>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="empty-state">
+            <h2>No Asks yet</h2>
+            <p className="muted">Start with one concrete thing you need.</p>
+            <ButtonLink href="/asks/new">Create an Ask</ButtonLink>
+          </div>
+        )
       ) : null}
 
       {tab === "My Offers" ? (
-        <div className="list">
-          <div className="list-row">
-            <span className="choice-icon">
-              <HandHeart size={20} />
-            </span>
-            <div className="list-content">
-              <div className="strong small">Helped with a garage cleanout</div>
-              <div className="tiny muted">Completed May 18 · 45 minutes</div>
-            </div>
-            <ArrowRight size={17} />
+        data.offers.length ? (
+          <div className="list">
+            {data.offers.map((offer) => (
+              <Link
+                href={
+                  offer.commitmentId
+                    ? `/commitments/${offer.commitmentId}`
+                    : `/asks/${offer.askId}`
+                }
+                className="list-row"
+                key={offer.id}
+              >
+                <span className="choice-icon">
+                  <HandHeart size={20} />
+                </span>
+                <div className="list-content">
+                  <div className="strong small">{offer.summary}</div>
+                  <div className="tiny muted">
+                    {offer.askTitle} · {statusLabel(offer.status)} ·{" "}
+                    {offer.submittedAt}
+                  </div>
+                </div>
+                <ArrowRight size={17} />
+              </Link>
+            ))}
           </div>
-          <div className="list-row">
-            <span className="choice-icon">
-              <Package size={20} />
-            </span>
-            <div className="list-content">
-              <div className="strong small">Lent a large cooler</div>
-              <div className="tiny muted">Returned May 10</div>
-            </div>
-            <ArrowRight size={17} />
+        ) : (
+          <div className="empty-state">
+            <h2>No Offers yet</h2>
+            <p className="muted">
+              When you help through a shared Ask, it appears here.
+            </p>
           </div>
-        </div>
+        )
       ) : null}
 
       {tab === "Loans" ? (
-        <div className="stack-sm">
-          <Link href="/loans/birthday-tables" className="card pad interactive">
-            <div className="row-between">
-              <Chip tone="green">Active</Chip>
-              <span className="tiny muted">Due in 2 days</span>
-            </div>
-            <div className="row-start" style={{ marginTop: 12 }}>
-              <Image
-                src="/assets/folding-table.jpg"
-                alt=""
-                width={82}
-                height={58}
-                style={{
-                  width: 82,
-                  height: 58,
-                  objectFit: "cover",
-                  borderRadius: 9,
-                }}
-              />
-              <div>
-                <h3>2 folding tables</h3>
-                <p className="muted tiny" style={{ margin: 0 }}>
-                  From Janet · return Sunday by 6 PM
-                </p>
-              </div>
-            </div>
-          </Link>
-          <div className="card pad">
-            <div className="row-between">
-              <Chip>Returned</Chip>
-              <span className="tiny muted">May 10</span>
-            </div>
-            <h3 style={{ marginTop: 12 }}>Large cooler</h3>
-            <p className="muted tiny" style={{ margin: 0 }}>
-              Return confirmed by Mark
+        data.loans.length ? (
+          <div className="stack-sm">
+            {data.loans.map((loan) => (
+              <Link
+                href={`/loans/${loan.id}`}
+                className="card pad interactive"
+                key={loan.id}
+              >
+                <div className="row-between">
+                  <Chip
+                    tone={
+                      loan.status === "overdue" || loan.status === "disputed"
+                        ? "red"
+                        : loan.status === "returned"
+                          ? undefined
+                          : "green"
+                    }
+                  >
+                    {statusLabel(loan.status)}
+                  </Chip>
+                  <span className="tiny muted">
+                    {loan.direction === "borrowed" ? "Borrowed" : "Lent"}
+                  </span>
+                </div>
+                <div className="row-start" style={{ marginTop: 12 }}>
+                  <span className="choice-icon">
+                    <Package size={21} />
+                  </span>
+                  <div>
+                    <h3>{loan.itemName}</h3>
+                    <p className="muted tiny" style={{ margin: 0 }}>
+                      {loan.direction === "borrowed" ? "From" : "To"}{" "}
+                      {loan.counterpartName}
+                      {loan.dueAt
+                        ? ` · due ${new Intl.DateTimeFormat("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          }).format(new Date(loan.dueAt))}`
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <h2>No Loan records</h2>
+            <p className="muted">
+              Physical lending custody appears here after an Offer is accepted.
             </p>
           </div>
-        </div>
+        )
       ) : null}
 
       {tab === "Saved items" ? (
-        <div className="stack-sm">
-          {savedResources.map((resource) => (
-            <Link
-              href={`/resources/${resource.id}`}
-              className="card pad interactive"
-              key={resource.id}
-            >
-              <div className="row-start">
-                <Image
-                  src={resource.image}
-                  alt=""
-                  width={76}
-                  height={62}
-                  style={{
-                    width: 76,
-                    height: 62,
-                    objectFit: "cover",
-                    borderRadius: 9,
-                  }}
-                />
-                <div className="list-content">
-                  <h3>{resource.title}</h3>
-                  <p className="muted tiny" style={{ margin: 0 }}>
-                    {resource.category} · {resource.saved}
-                  </p>
+        data.resources.length ? (
+          <div className="stack-sm">
+            {data.resources.map((resource) => (
+              <Link
+                href={`/resources/${resource.id}`}
+                className="card pad interactive"
+                key={resource.id}
+              >
+                <div className="row-start">
+                  {resource.image ? (
+                    <Image
+                      src={resource.image}
+                      alt=""
+                      width={76}
+                      height={62}
+                      style={{
+                        width: 76,
+                        height: 62,
+                        objectFit: "cover",
+                        borderRadius: 9,
+                      }}
+                    />
+                  ) : (
+                    <span className="choice-icon">
+                      <Package size={22} />
+                    </span>
+                  )}
+                  <div className="list-content">
+                    <h3>{resource.title}</h3>
+                    <p className="muted tiny" style={{ margin: 0 }}>
+                      {statusLabel(resource.visibility)} · saved{" "}
+                      {resource.savedAt}
+                    </p>
+                  </div>
+                  <ArrowRight size={17} />
                 </div>
-                <ArrowRight size={17} />
-              </div>
-            </Link>
-          ))}
-          <div className="notice">
-            <strong>Private by default.</strong> Saved items are used for
-            private matching unless you explicitly make one visible to the
-            Circle.
+              </Link>
+            ))}
+            <div className="notice">
+              <strong>Private by default.</strong> Saved items are used for
+              private matching unless you explicitly make one visible to the
+              Circle.
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="empty-state">
+            <h2>No saved items</h2>
+            <p className="muted">
+              After a successful Loan, the lender can remember the item with one
+              choice.
+            </p>
+          </div>
+        )
       ) : null}
     </div>
   );

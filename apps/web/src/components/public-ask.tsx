@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Check,
   Copy,
+  Gift,
   HandHeart,
+  Lightbulb,
   LinkSimple,
   LockKey,
   Package,
@@ -13,23 +15,64 @@ import {
   UsersThree,
   WhatsappLogo,
 } from "@phosphor-icons/react";
-import { asks } from "@/lib/mock-data";
+import type { SharedAskProjection } from "@/server/ask-queries";
+import { requestOtpAction, verifyOtpAction } from "@/server/auth-actions";
+import { submitSharedOfferAction } from "@/server/ask-actions";
 import { useHydrated } from "@/lib/use-hydrated";
 import { Button, Card, CheckCircle, Progress } from "./ui";
 
-const ask = asks[0];
+const offerModes = [
+  { id: "lend", label: "Lend an item", icon: Package },
+  { id: "give", label: "Give something", icon: Gift },
+  { id: "help", label: "Give time", icon: UsersThree },
+  { id: "advice", label: "Share know-how", icon: Lightbulb },
+  { id: "recommendation", label: "Recommend", icon: HandHeart },
+  { id: "alternative", label: "Alternative", icon: LinkSimple },
+] as const;
 
-export function PublicAsk() {
+type OfferMode = (typeof offerModes)[number]["id"];
+
+export function PublicAsk({
+  ask,
+  shareToken,
+  authenticated,
+}: {
+  ask: SharedAskProjection;
+  shareToken: string;
+  authenticated: boolean;
+}) {
   const hydrated = useHydrated();
+  const openNeeds = useMemo(
+    () => ask.needs.filter((need) => need.committed < need.quantity),
+    [ask.needs],
+  );
   const [showOffer, setShowOffer] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [selectedNeed, setSelectedNeed] = useState("canopy");
-  const [mode, setMode] = useState("lend");
-  const [description, setDescription] = useState(
-    "I have a 10×10 pop-up canopy you can borrow.",
+  const [selectedNeed, setSelectedNeed] = useState(openNeeds[0]?.id ?? "");
+  const [mode, setMode] = useState<OfferMode>(
+    openNeeds[0]?.kind ?? "alternative",
   );
+  const [itemName, setItemName] = useState("");
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const channel = "email" as const;
   const [contact, setContact] = useState("");
+  const [otp, setOtp] = useState("");
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [destinationHint, setDestinationHint] = useState("");
+  const [verified, setVerified] = useState(authenticated);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
+
+  const selected = openNeeds.find((need) => need.id === selectedNeed);
+  const maxQuantity = Math.max(
+    1,
+    (selected?.quantity ?? 1) - (selected?.committed ?? 0),
+  );
 
   async function copyLink() {
     await navigator.clipboard.writeText(window.location.href);
@@ -37,11 +80,91 @@ export function PublicAsk() {
     window.setTimeout(() => setCopied(false), 1600);
   }
 
-  async function shareToWhatsApp() {
+  function shareToWhatsApp() {
     const text = encodeURIComponent(
       `Can you help with “${ask.title}”? ${window.location.href}`,
     );
     window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  }
+
+  async function openShareOptions() {
+    setError("");
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: ask.title,
+          url: window.location.href,
+        });
+      } else {
+        await copyLink();
+      }
+    } catch (shareError) {
+      if (!(
+        shareError instanceof DOMException && shareError.name === "AbortError"
+      )) {
+        setError("The share menu could not open. The link is still available.");
+      }
+    }
+  }
+
+  async function requestCode() {
+    setPending(true);
+    setError("");
+    const result = await requestOtpAction({
+      channel,
+      value: contact,
+      firstName,
+      lastName,
+      next: `/share/${shareToken}`,
+    });
+    setPending(false);
+    if (!result.ok) {
+      setError(result.error.message);
+      return;
+    }
+    setDestinationHint(result.data.destinationHint);
+    setVerificationSent(true);
+  }
+
+  async function submitOffer() {
+    if (!selectedNeed) return;
+    setPending(true);
+    setError("");
+
+    if (!verified) {
+      const verification = await verifyOtpAction({
+        channel,
+        value: contact,
+        firstName,
+        lastName,
+        token: otp,
+        next: `/share/${shareToken}`,
+      });
+      if (!verification.ok) {
+        setPending(false);
+        setError(verification.error.message);
+        return;
+      }
+      setVerified(true);
+    }
+
+    const result = await submitSharedOfferAction({
+      shareToken,
+      askId: ask.id,
+      needId: selectedNeed,
+      offerType: mode,
+      freeformItemName: mode === "lend" ? itemName : "",
+      description,
+      quantity: Math.min(quantity, maxQuantity),
+      conditions: "",
+      idempotencyKey,
+    });
+    setPending(false);
+    if (!result.ok) {
+      setError(result.error.message);
+      return;
+    }
+    setSubmitted(true);
   }
 
   if (submitted) {
@@ -57,8 +180,8 @@ export function PublicAsk() {
           />
           <h1>Your offer is in</h1>
           <p className="lede">
-            Emily can review it privately. You’ll get a secure link if she
-            accepts.
+            The requester can review it privately. You’ll see private
+            coordination only if the Offer is accepted.
           </p>
         </div>
         <Card className="pad section">
@@ -80,31 +203,33 @@ export function PublicAsk() {
             verification and private coordination only.
           </span>
         </div>
-        <div className="spacer-24" />
-        <Button full onClick={() => setSubmitted(false)} variant="secondary">
-          Edit offer
-        </Button>
+        <p className="help-text" style={{ textAlign: "center", marginTop: 14 }}>
+          Helping with this Ask does not expose the rest of Paseos. Use the
+          separate private community invitation from WhatsApp whenever you want
+          full member access.
+        </p>
       </div>
     );
   }
 
   return (
     <div className="content narrow">
-      <div className="share-hero">
-        <Image
-          src="/assets/birthday-party.jpg"
-          alt="Backyard birthday party setup"
-          width={680}
-          height={360}
-          priority
-        />
-      </div>
-      <div className="share-overlay">
-        <div className="eyebrow">Oakridge HOA · Private Ask</div>
+      {ask.image ? (
+        <div className="share-hero">
+          <Image src={ask.image} alt="" width={680} height={360} priority />
+        </div>
+      ) : null}
+      <div className={ask.image ? "share-overlay" : "card pad"}>
+        <div className="eyebrow">{ask.circleName} · Private Ask</div>
         <h1 style={{ fontSize: 28, marginTop: 7 }}>{ask.title}</h1>
         <p className="muted small">
           {ask.dateLabel} · {ask.generalLocation}
         </p>
+        {ask.description ? (
+          <p className="small" style={{ marginTop: 12 }}>
+            {ask.description}
+          </p>
+        ) : null}
         <div className="need-checklist" style={{ marginTop: 16 }}>
           {ask.needs.map((need) => {
             const done = need.committed >= need.quantity;
@@ -114,7 +239,7 @@ export function PublicAsk() {
                 <span>{need.title}</span>
                 <span className="tiny muted">
                   {done
-                    ? need.contributor
+                    ? "Covered"
                     : `${need.quantity - need.committed} needed`}
                 </span>
               </div>
@@ -122,7 +247,10 @@ export function PublicAsk() {
           })}
         </div>
         <div style={{ marginTop: 16 }}>
-          <Progress value={75} label="3 of 4 needs covered" />
+          <Progress
+            value={ask.progress}
+            label={`${ask.needs.length - openNeeds.length} of ${ask.needs.length} needs covered`}
+          />
         </div>
       </div>
 
@@ -130,18 +258,25 @@ export function PublicAsk() {
         <>
           <section className="section">
             <Card className="pad soft">
-              <h2>Neighbors can help</h2>
+              <h2>
+                {openNeeds.length
+                  ? "Neighbors can help"
+                  : "This Ask is covered"}
+              </h2>
               <p className="muted small">
-                Offer an item, time, know-how, or an alternative. You do not
-                need to list anything first.
+                {openNeeds.length
+                  ? "Offer an item, time, know-how, recommendation, or an alternative. You do not need to list anything first."
+                  : "You can still share the completion or check back if the requester reopens a need."}
               </p>
-              <Button
-                full
-                disabled={!hydrated}
-                onClick={() => setShowOffer(true)}
-              >
-                <HandHeart size={19} weight="duotone" /> I can help
-              </Button>
+              {openNeeds.length ? (
+                <Button
+                  full
+                  disabled={!hydrated}
+                  onClick={() => setShowOffer(true)}
+                >
+                  <HandHeart size={19} weight="duotone" /> I can help
+                </Button>
+              ) : null}
             </Card>
           </section>
           <section className="section stack-sm">
@@ -152,15 +287,7 @@ export function PublicAsk() {
               <Button variant="neutral" onClick={copyLink}>
                 <Copy size={17} /> {copied ? "Copied" : "Copy link"}
               </Button>
-              <Button
-                variant="neutral"
-                onClick={() =>
-                  navigator.share?.({
-                    title: ask.title,
-                    url: window.location.href,
-                  })
-                }
-              >
+              <Button variant="neutral" onClick={openShareOptions}>
                 <ShareNetwork size={17} /> Share options
               </Button>
             </div>
@@ -168,8 +295,8 @@ export function PublicAsk() {
           <div className="privacy-callout section">
             <LockKey size={21} />
             <span>
-              This link reveals only this Ask. It does not show the community
-              roster, exact addresses, phone numbers, or private offers.
+              This link reveals only this Ask. It does not show the Circle
+              roster, exact addresses, contact details, or private Offers.
             </span>
           </div>
         </>
@@ -179,7 +306,7 @@ export function PublicAsk() {
             <div>
               <h2>How can you help?</h2>
               <p className="muted small" style={{ margin: 0 }}>
-                Emily sees the offer privately.
+                Only the requester sees the Offer.
               </p>
             </div>
             <button
@@ -193,47 +320,40 @@ export function PublicAsk() {
             <div className="field">
               <span className="field-label">Which need?</span>
               <div className="choice-list">
-                {ask.needs
-                  .filter((need) => need.committed < need.quantity)
-                  .map((need) => (
-                    <button
-                      className="choice"
-                      data-selected={selectedNeed === need.id}
-                      onClick={() => setSelectedNeed(need.id)}
-                      key={need.id}
-                    >
-                      <span className="choice-icon">
-                        <Package size={18} />
+                {openNeeds.map((need) => (
+                  <button
+                    type="button"
+                    className="choice"
+                    data-selected={selectedNeed === need.id}
+                    onClick={() => {
+                      setSelectedNeed(need.id);
+                      setMode(need.kind);
+                      setQuantity(1);
+                    }}
+                    key={need.id}
+                  >
+                    <span className="choice-icon">
+                      <Package size={18} />
+                    </span>
+                    <span style={{ flex: 1 }}>
+                      <span className="strong small">{need.title}</span>
+                      <span className="help-text" style={{ display: "block" }}>
+                        {need.quantity - need.committed} still needed
                       </span>
-                      <span style={{ flex: 1 }}>
-                        <span className="strong small">{need.title}</span>
-                        <span
-                          className="help-text"
-                          style={{ display: "block" }}
-                        >
-                          {need.quantity - need.committed} still needed
-                        </span>
-                      </span>
-                      {selectedNeed === need.id ? (
-                        <Check
-                          size={18}
-                          color="var(--green-600)"
-                          weight="bold"
-                        />
-                      ) : null}
-                    </button>
-                  ))}
+                    </span>
+                    {selectedNeed === need.id ? (
+                      <Check size={18} color="var(--green-600)" weight="bold" />
+                    ) : null}
+                  </button>
+                ))}
               </div>
             </div>
             <div className="field">
               <span className="field-label">What are you offering?</span>
               <div className="chip-row">
-                {[
-                  { id: "lend", label: "Lend an item", icon: Package },
-                  { id: "help", label: "Give time", icon: UsersThree },
-                  { id: "alternative", label: "Alternative", icon: LinkSimple },
-                ].map((item) => (
+                {offerModes.map((item) => (
                   <button
+                    type="button"
                     className="chip"
                     data-selected={mode === item.id}
                     onClick={() => setMode(item.id)}
@@ -244,44 +364,153 @@ export function PublicAsk() {
                 ))}
               </div>
             </div>
+            {mode === "lend" ? (
+              <div className="field">
+                <label htmlFor="offer-item-name">What item is it?</label>
+                <input
+                  id="offer-item-name"
+                  className="input"
+                  value={itemName}
+                  onChange={(event) => setItemName(event.target.value)}
+                  placeholder="e.g. 6-foot folding table"
+                  maxLength={100}
+                />
+              </div>
+            ) : null}
+            {maxQuantity > 1 ? (
+              <div className="field">
+                <label htmlFor="offer-quantity">How many?</label>
+                <input
+                  id="offer-quantity"
+                  className="input"
+                  type="number"
+                  min={1}
+                  max={maxQuantity}
+                  value={quantity}
+                  onChange={(event) =>
+                    setQuantity(
+                      Math.max(
+                        1,
+                        Math.min(maxQuantity, Number(event.target.value) || 1),
+                      ),
+                    )
+                  }
+                />
+              </div>
+            ) : null}
             <div className="field">
               <label htmlFor="offer-description">
-                Tell Emily what you can contribute
+                Tell the requester what you can contribute
               </label>
               <textarea
                 id="offer-description"
                 className="textarea"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
+                placeholder="Include useful timing, size, or condition details."
+                maxLength={800}
               />
             </div>
-            <div className="field">
-              <label htmlFor="offer-contact">
-                Phone or email for verification
-              </label>
-              <input
-                id="offer-contact"
-                className="input"
-                value={contact}
-                onChange={(event) => setContact(event.target.value)}
-                placeholder="Used privately; never shown on the Ask"
-              />
-            </div>
-            <div className="notice">
-              <strong>Mock-mode verification.</strong> Production uses
-              passwordless OTP and Turnstile before the offer is submitted.
-            </div>
-            <Button
-              full
-              disabled={
-                !hydrated ||
-                description.trim().length < 10 ||
-                contact.trim().length < 5
-              }
-              onClick={() => setSubmitted(true)}
-            >
-              <HandHeart size={19} /> Verify and submit privately
-            </Button>
+            {!verified ? (
+              <>
+                <div className="field-grid-2">
+                  <div className="field">
+                    <label htmlFor="offer-first-name">First name</label>
+                    <input
+                      id="offer-first-name"
+                      className="input"
+                      value={firstName}
+                      onChange={(event) => setFirstName(event.target.value)}
+                      autoComplete="given-name"
+                      placeholder="First name"
+                      maxLength={50}
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="offer-last-name">Last name</label>
+                    <input
+                      id="offer-last-name"
+                      className="input"
+                      value={lastName}
+                      onChange={(event) => setLastName(event.target.value)}
+                      autoComplete="family-name"
+                      placeholder="Last name"
+                      maxLength={80}
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label htmlFor="offer-contact">
+                    Email address for private verification
+                  </label>
+                  <input
+                    id="offer-contact"
+                    className="input"
+                    type="email"
+                    value={contact}
+                    onChange={(event) => setContact(event.target.value)}
+                    placeholder="Never shown on the Ask"
+                    autoComplete="email"
+                  />
+                </div>
+                {verificationSent ? (
+                  <div className="field">
+                    <label htmlFor="offer-otp">
+                      Code sent to {destinationHint}
+                    </label>
+                    <input
+                      id="offer-otp"
+                      className="input"
+                      value={otp}
+                      onChange={(event) =>
+                        setOtp(
+                          event.target.value.replace(/\D/g, "").slice(0, 8),
+                        )
+                      }
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      placeholder="Six-digit code"
+                    />
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <div className="notice">
+                <strong>Identity verified.</strong> Your contact details remain
+                private.
+              </div>
+            )}
+            {error ? <div className="notice error">{error}</div> : null}
+            {!verified && !verificationSent ? (
+              <Button
+                full
+                disabled={
+                  pending ||
+                  firstName.trim().length < 1 ||
+                  lastName.trim().length < 1 ||
+                  contact.trim().length < 5 ||
+                  description.trim().length < 10 ||
+                  (mode === "lend" && itemName.trim().length < 1)
+                }
+                onClick={requestCode}
+              >
+                {pending ? "Sending code…" : "Send verification code"}
+              </Button>
+            ) : (
+              <Button
+                full
+                disabled={
+                  pending ||
+                  description.trim().length < 10 ||
+                  (mode === "lend" && itemName.trim().length < 1) ||
+                  (!verified && otp.length < 6)
+                }
+                onClick={submitOffer}
+              >
+                <HandHeart size={19} />{" "}
+                {pending ? "Submitting…" : "Submit privately"}
+              </Button>
+            )}
           </div>
         </section>
       )}
