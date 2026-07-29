@@ -22,6 +22,7 @@ dedicated SMTP sender and policy approval.
 | Commitments | Production verified | The requester accepted the Offer and received a participant-only coordination record |
 | Loans | Production verified | Handoff, borrower return, and lender confirmation completed against hosted data |
 | Progressive resources | Production verified | Post-return item memory and Circle-visible library path are implemented and covered by browser tests |
+| Community library | Items-only pilot | Browse and add optional shareable items; a separate services/referral directory is deferred |
 | Notifications | Implemented; provider-gated | Transactional outbox, quiet hours, bounded worker, retry/dead-letter, mock and Resend adapters |
 | Admin and safety | Complete for P0 | Membership moderation, incident summaries, no default access to messages/location/evidence |
 | AI drafting | Deferred P1 | Route seam remains disabled by default |
@@ -69,6 +70,11 @@ dedicated SMTP sender and policy approval.
 
 The detailed role and journey evidence is in
 `docs/24_P0_JOURNEY_QA_MATRIX.md`.
+
+For the Paseos pilot, neighbor help, advice, and recommendations remain valid
+contributions inside a concrete Ask. A separate services/referral directory is
+intentionally out of scope so the first experience stays focused on asking,
+offering, and tracking shared items.
 
 ## Environment boundary
 

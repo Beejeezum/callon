@@ -179,6 +179,28 @@ details and inventory are not required at signup.
 `apps/web/src/components/auth-form.tsx`,
 `design/audits/2026-07-29-onboarding`.
 
+## ADR-019 — Paseos pilot library is items-only
+
+**Date:** 2026-07-29
+**Status:** accepted
+**Decision:** Remove the separate service-referral directory from the Paseos
+pilot. The library contains only optional, neighbor-added items. Help, advice,
+and recommendations remain available as contributions to a concrete Ask.
+**Context:** A Services tab introduced a second product model, additional
+validation work, and more information than a first-time neighbor needs. The
+pilot should teach one loop: create an Ask, receive offers, and track any item
+that needs to come back.
+**Alternatives:** Keep Services alongside Items; hide Services behind a feature
+flag; keep a static list of local referrals.
+**Consequences:** `/library` has one search-and-browse experience for items.
+Service-directory source and UI code are removed. Reintroducing referrals later
+requires a separately scoped product and trust review.
+**Security/privacy impact:** The pilot no longer ships third-party contact
+details or unverified service claims, reducing privacy, maintenance, and
+reputation risk.
+**Files/PR:** `apps/web/src/app/library/page.tsx`,
+`apps/web/src/components/library-view.tsx`, `apps/web/src/app/globals.css`.
+
 ## ADR template
 
 ```md
