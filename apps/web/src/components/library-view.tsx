@@ -45,7 +45,7 @@ export function LibraryView({
   canAdd: boolean;
   added?: boolean;
 }) {
-  const [mode, setMode] = useState<"items" | "services">("services");
+  const [mode, setMode] = useState<"items" | "services">("items");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const visibleResources = useMemo(() => {
