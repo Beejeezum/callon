@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   expectNoSeriousAccessibilityViolations,
+  joinWithEmailOtp,
   projectState,
   signInWithEmailOtp,
   submitOfferWithEmailOtp,
@@ -22,15 +23,6 @@ test("signed-out guard, requester creation, and safe shared Ask", async ({
   await expect(page).toHaveURL(/\/login\?next=/);
 
   await signInWithEmailOtp(page, state.requester.email);
-  await expect(
-    page.getByRole("heading", { name: "Create your first private Circle" }),
-  ).toBeVisible();
-  await page.getByLabel("Circle name").fill(state.circleName);
-  await page.getByLabel("General area").fill("Maple Grove test area");
-  await page
-    .getByLabel("Short description")
-    .fill("A synthetic private Circle for local journey QA.");
-  await page.getByRole("button", { name: "Create private Circle" }).click();
   await expect(page.locator(".header-title")).toHaveText(state.circleName);
   await page
     .getByRole("main")
@@ -170,16 +162,18 @@ test("admin invite, join acceptance, restriction, and restoration", async ({
 }, testInfo) => {
   const state = await projectState(testInfo);
   await signInWithEmailOtp(page, state.requester.email, "/admin");
-  await page.getByRole("button", { name: "Create expiring invite" }).click();
+  await page
+    .getByRole("button", { name: "Create 30-day Paseos invite" })
+    .click();
   const inviteUrl = await page.getByLabel("Invitation link").inputValue();
 
-  await page.context().clearCookies();
-  await page.goto(inviteUrl);
-  await expect(page.getByText(state.circleName)).toBeVisible();
-
-  const invitePath = new URL(inviteUrl).pathname;
-  await signInWithEmailOtp(page, state.joiner.email, `${invitePath}/complete`);
-  await page.getByRole("button", { name: `Join ${state.circleName}` }).click();
+  await joinWithEmailOtp(
+    page,
+    inviteUrl,
+    state.joiner.email,
+    state.joiner.displayName,
+    state.circleName,
+  );
   await expect(page.locator(".header-title")).toHaveText(state.circleName);
 
   await signInWithEmailOtp(page, state.requester.email, "/admin");
@@ -205,6 +199,38 @@ test("admin invite, join acceptance, restriction, and restoration", async ({
   });
   await joinerRow.getByRole("button", { name: "Restore" }).click();
   await expect(joinerRow).toContainText("active");
+});
+
+test("member can add a browseable item and another member can discover it", async ({
+  page,
+}, testInfo) => {
+  const state = await projectState(testInfo);
+  await signInWithEmailOtp(page, state.requester.email, "/resources/new");
+  await page.getByRole("button", { name: /Folding table/ }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("Category").selectOption({ label: "Tables & chairs" });
+  await page
+    .getByLabel("Helpful detail")
+    .fill("One six-foot table that folds flat.");
+  await page.getByText("Show in the Paseos library", { exact: true }).click();
+  await page
+    .getByRole("button", { name: "Add to my sharing preferences" })
+    .click();
+  await page.waitForURL(/\/resources\/[^/]+\?created=1$/);
+  await expect(
+    page.getByRole("heading", { name: "Folding table" }),
+  ).toBeVisible();
+
+  await signInWithEmailOtp(page, state.joiner.email, "/library");
+  await expect(page.getByText("Folding table", { exact: true })).toBeVisible();
+  await page.getByText("Folding table", { exact: true }).click();
+  await expect(
+    page.getByText(state.requester.displayName, { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Create an Ask about this" }),
+  ).toBeVisible();
+  await expectNoSeriousAccessibilityViolations(page);
 });
 
 test("private surfaces remain scoped across role changes", async ({

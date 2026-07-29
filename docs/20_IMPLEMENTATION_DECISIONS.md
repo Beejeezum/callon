@@ -127,6 +127,31 @@ separate human gates.
 must never receive production Supabase or provider credentials.
 **Files/PR:** `netlify.toml`, deployment documentation, health metadata.
 
+## ADR-017 — Paseos is invite-first; Circle provisioning is operator-controlled
+
+**Date:** 2026-07-29
+**Status:** accepted
+**Decision:** A verified Paseos launch invite grants immediate active membership.
+Verified guests may contribute only to the shared Ask. Ordinary authenticated
+users cannot self-provision a Circle; approved communities are created through
+the service-role-only `provision_circle` transaction.
+**Context:** The Paseos pilot needs an easy WhatsApp join path without making
+the community or member inventory public. Open Circle creation would also
+bypass moderation ownership, launch readiness, and tenant provisioning review.
+**Alternatives:** Open signup with later Circle selection; public Ask creation;
+automatic address verification; administrator approval for every Paseos join.
+**Consequences:** Signup captures first name, last name, and verified email.
+Street address is deferred to an accepted transaction. The Paseos administrator
+can revoke launch links, moderate memberships, and appoint moderators. A future
+community application workflow creates no data-plane Circle before operator
+approval.
+**Security/privacy impact:** Invite secrets are hashed, guest grants are
+Ask-scoped, exact addresses remain party-private, and arbitrary authenticated
+Circle creation is revoked at the database privilege boundary.
+**Files/PR:** `docs/25_PASEOS_PILOT_MEMBERSHIP_ADMIN_AND_LAUNCH.md`,
+`supabase/migrations/202607290013_paseos_membership_library_admin.sql`,
+Paseos auth/admin/library routes.
+
 ## ADR template
 
 ```md

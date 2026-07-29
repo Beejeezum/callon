@@ -16,6 +16,14 @@ export type AdminOverview = {
     status: string;
     joinedAt: string | null;
   }>;
+  invites: Array<{
+    id: string;
+    status: string;
+    useCount: number;
+    maxUses: number;
+    expiresAt: string;
+    createdAt: string;
+  }>;
   incidents: Array<{
     id: string;
     kind: string;
@@ -33,7 +41,7 @@ export const getAdminOverview = cache(
     if (!isSupabaseConfigured || !profileId) {
       return {
         circleId: "b0b08438-1234-4a2d-9ea2-2a88f3f47001",
-        circleName: "Oakridge HOA",
+        circleName: "Paseos Community Sharing",
         activeMembers: 42,
         completedSharers: 8,
         memberships: [
@@ -46,6 +54,7 @@ export const getAdminOverview = cache(
             joinedAt: null,
           },
         ],
+        invites: [],
         incidents: [],
       };
     }
@@ -67,6 +76,7 @@ export const getAdminOverview = cache(
       { data: memberships },
       { data: incidents },
       { data: completedLoans },
+      { data: invites },
     ] = await Promise.all([
       supabase.from("circles").select("name").eq("id", circleId).single(),
       supabase
@@ -85,6 +95,12 @@ export const getAdminOverview = cache(
         .select("lender_profile_id, borrower_profile_id")
         .eq("circle_id", circleId)
         .eq("status", "returned"),
+      supabase
+        .from("circle_invites")
+        .select("id, status, use_count, max_uses, expires_at, created_at")
+        .eq("circle_id", circleId)
+        .order("created_at", { ascending: false })
+        .limit(10),
     ]);
     const profileIds = (memberships ?? []).map(
       (membership) => membership.profile_id,
@@ -118,6 +134,14 @@ export const getAdminOverview = cache(
         role: membership.role,
         status: membership.status,
         joinedAt: membership.joined_at,
+      })),
+      invites: (invites ?? []).map((invite) => ({
+        id: invite.id,
+        status: invite.status,
+        useCount: invite.use_count,
+        maxUses: invite.max_uses,
+        expiresAt: invite.expires_at,
+        createdAt: invite.created_at,
       })),
       incidents: (incidents ?? []).map((incident) => ({
         id: incident.id,

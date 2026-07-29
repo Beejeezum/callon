@@ -151,7 +151,7 @@ export const getSharedAsk = cache(
     if (!isSupabaseConfigured) {
       return {
         ...mockAsks[0],
-        circleName: "Oakridge HOA",
+        circleName: "Paseos Community Sharing",
         expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
       };
     }

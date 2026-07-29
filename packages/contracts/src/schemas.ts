@@ -132,6 +132,25 @@ export const saveResourceSchema = z.object({
   idempotencyKey: z.string().min(16).max(200),
 });
 
+export const createResourceSchema = z.object({
+  circleId: z.uuid(),
+  title: trimmed(100),
+  description: optionalText(800),
+  categoryId: z.uuid().optional(),
+  visibility: z.enum(resourceVisibilities).default("match_only"),
+  willingness: z.enum(resourceWillingness).default("happy_to_be_asked"),
+  usualTerms: optionalText(800),
+  idempotencyKey: z.string().min(16).max(200),
+});
+
+export const updateResourceSchema = createResourceSchema
+  .omit({ circleId: true, idempotencyKey: true })
+  .extend({
+    resourceId: z.uuid(),
+    status: z.enum(["active", "paused", "retired"]),
+    idempotencyKey: z.string().min(16).max(200),
+  });
+
 export const sharedAskTokenSchema = z.string().regex(/^[A-Za-z0-9_-]{24,128}$/);
 export const offerStatusSchema = z.enum(offerStatuses);
 
@@ -196,5 +215,16 @@ export const reportIncidentSchema = z.object({
 export const moderateMembershipSchema = z.object({
   membershipId: z.uuid(),
   action: z.enum(["activate", "restrict", "suspend", "restore"]),
+  idempotencyKey: z.string().min(16).max(200),
+});
+
+export const changeMembershipRoleSchema = z.object({
+  membershipId: z.uuid(),
+  role: z.enum(circleRoles),
+  idempotencyKey: z.string().min(16).max(200),
+});
+
+export const revokeCircleInviteSchema = z.object({
+  inviteId: z.uuid(),
   idempotencyKey: z.string().min(16).max(200),
 });

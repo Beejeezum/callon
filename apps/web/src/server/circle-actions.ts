@@ -109,9 +109,10 @@ export async function acceptCircleInviteAction(input: unknown) {
 export async function getCircleInvitePreview(token: string) {
   if (!isSupabaseConfigured) {
     return {
-      circleName: "Oakridge HOA",
-      generalArea: "Oakridge community",
-      description: "A private Circle for nearby neighbors.",
+      circleName: "Paseos Community Sharing",
+      generalArea: "Paseos · Boca Raton, Florida",
+      description:
+        "A private, neighbor-built place for Paseos residents to ask, share, and keep handoffs easy.",
       expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
     };
   }

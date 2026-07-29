@@ -8,10 +8,10 @@ The canonical product loop is:
 Create Ask → Share Ask → Receive private Offer → Accept → Coordinate → Handoff → Return/Complete → Remember optionally
 ```
 
-The bundle deliberately contains both:
+The repository contains both:
 
-1. a runnable **mock-mode Next.js frontend scaffold** under `apps/web`; and
-2. the production architecture, SQL migrations, security rules, tasks, runbooks, and Codex instructions required to turn that scaffold into a controlled pilot.
+1. the working **Paseos pilot application** under `apps/web`; and
+2. the production architecture, SQL migrations, security rules, tasks, runbooks, and Codex instructions required to operate it as a controlled pilot.
 
 ## Canonical visual direction
 
@@ -38,6 +38,7 @@ Do **not** copy exploratory mistakes from the board: public stars, exact address
 8. `docs/08_DATABASE_SCHEMA_AND_RLS.md`
 9. `docs/15_SECURITY_PRIVACY_AND_SAFETY.md`
 10. `docs/18_ROADMAP_AND_TASK_SEQUENCE.md`
+11. `docs/25_PASEOS_PILOT_MEMBERSHIP_ADMIN_AND_LAUNCH.md`
 
 The complete original PRD is preserved at `docs/01_FULL_PRD.md`.
 
@@ -76,7 +77,7 @@ supabase db reset
 pnpm dev
 ```
 
-## What the scaffold already demonstrates
+## What the application implements
 
 - greeting-led Circle home;
 - finite, non-engagement-ranked activity;
@@ -92,18 +93,18 @@ pnpm dev
 - activity, inbox, profile, admin-boundary, and design-system routes;
 - provider and API seams for Supabase, email, analytics, error monitoring, AI, and WhatsApp.
 
-## What is not production-complete yet
+The Paseos-specific release also includes a branded public welcome page, real
+email OTP joining, immediate invite membership, operator-controlled Circle
+provisioning, a browsable member library, an optional quick-add item wizard,
+revocable launch links, and role administration.
 
-The code is a production scaffold, not a launched service. Codex must still:
+## What remains human-gated
 
-- install and resolve dependencies and commit a lockfile;
-- implement authenticated Server Actions/Route Handlers against Supabase;
-- run and correct every SQL migration in local Supabase;
-- complete RLS tests and cross-Circle attack tests;
-- wire OTP, email, Turnstile, Sentry, PostHog, and Netlify environments;
-- replace mock repositories screen-by-screen;
-- add full accessibility, browser, concurrency, security, backup, and recovery evidence;
-- stop at the human gates in `AGENTS.md`.
+The deterministic product and database paths are implemented and tested.
+Production still requires the account owner to configure the DreamCraftLabs
+Netlify environment, hosted Supabase Auth email delivery, abuse controls,
+monitoring, backups, legal policy, and launch approval. Codex must stop at the
+human gates in `AGENTS.md`.
 
 ## Codex entry points
 
@@ -118,6 +119,8 @@ This monorepo is ready to import into Netlify from GitHub:
 
 ```text
 Repository: Beejeezum/callon
+Netlify team: DreamCraftLabs
+Netlify project: callonapp
 Base directory: leave unset (repository root)
 Package directory: apps/web
 Build command: pnpm --filter @call-on/web build

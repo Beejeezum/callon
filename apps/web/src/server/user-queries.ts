@@ -408,6 +408,10 @@ export type ResourceView = {
   willingness:
     "happy_to_be_asked" | "community_projects_only" | "weekends" | "paused";
   status: "active" | "paused" | "retired";
+  categoryId?: string;
+  usualTerms: string;
+  ownerName: string;
+  isOwner: boolean;
   image?: string;
 };
 
@@ -424,6 +428,9 @@ export const getResource = cache(
         visibility: "match_only",
         willingness: "happy_to_be_asked",
         status: "active",
+        usualTerms: "Please return it clean and folded.",
+        ownerName: "Janet",
+        isOwner: resourceId === "tables",
         image: "/assets/folding-table.jpg",
       };
     }
@@ -431,12 +438,16 @@ export const getResource = cache(
     const { data, error } = await supabase
       .from("resources")
       .select(
-        "id, title, description, visibility, willingness, status, image_path",
+        "id, title, description, visibility, willingness, status, image_path, category_id, usual_terms, owner_profile_id",
       )
       .eq("id", resourceId)
-      .eq("owner_profile_id", profileId)
       .maybeSingle();
     if (error || !data) return null;
+    const { data: owner } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", data.owner_profile_id)
+      .maybeSingle();
     return {
       id: data.id,
       title: data.title,
@@ -444,6 +455,13 @@ export const getResource = cache(
       visibility: data.visibility,
       willingness: data.willingness,
       status: data.status,
+      categoryId: data.category_id ?? undefined,
+      usualTerms: data.usual_terms ?? "",
+      ownerName:
+        data.owner_profile_id === profileId
+          ? "You"
+          : (owner?.display_name ?? "A Paseos neighbor"),
+      isOwner: data.owner_profile_id === profileId,
       image: data.image_path ?? undefined,
     };
   },

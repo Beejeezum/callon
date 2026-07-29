@@ -55,8 +55,9 @@ export function PublicAsk({
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [name, setName] = useState("");
-  const [channel, setChannel] = useState<"phone" | "email">("phone");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const channel = "email" as const;
   const [contact, setContact] = useState("");
   const [otp, setOtp] = useState("");
   const [verificationSent, setVerificationSent] = useState(false);
@@ -112,7 +113,8 @@ export function PublicAsk({
     const result = await requestOtpAction({
       channel,
       value: contact,
-      displayName: name,
+      firstName,
+      lastName,
       next: `/share/${shareToken}`,
     });
     setPending(false);
@@ -133,7 +135,8 @@ export function PublicAsk({
       const verification = await verifyOtpAction({
         channel,
         value: contact,
-        displayName: name,
+        firstName,
+        lastName,
         token: otp,
         next: `/share/${shareToken}`,
       });
@@ -200,6 +203,11 @@ export function PublicAsk({
             verification and private coordination only.
           </span>
         </div>
+        <p className="help-text" style={{ textAlign: "center", marginTop: 14 }}>
+          Helping with this Ask does not expose the rest of Paseos. Use the
+          separate private community invitation from WhatsApp whenever you want
+          full member access.
+        </p>
       </div>
     );
   }
@@ -405,45 +413,44 @@ export function PublicAsk({
             </div>
             {!verified ? (
               <>
-                <div className="field">
-                  <label htmlFor="offer-name">First name</label>
-                  <input
-                    id="offer-name"
-                    className="input"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="How the requester should know you"
-                    maxLength={80}
-                  />
+                <div className="field-grid-2">
+                  <div className="field">
+                    <label htmlFor="offer-first-name">First name</label>
+                    <input
+                      id="offer-first-name"
+                      className="input"
+                      value={firstName}
+                      onChange={(event) => setFirstName(event.target.value)}
+                      autoComplete="given-name"
+                      placeholder="First name"
+                      maxLength={50}
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="offer-last-name">Last name</label>
+                    <input
+                      id="offer-last-name"
+                      className="input"
+                      value={lastName}
+                      onChange={(event) => setLastName(event.target.value)}
+                      autoComplete="family-name"
+                      placeholder="Last name"
+                      maxLength={80}
+                    />
+                  </div>
                 </div>
                 <div className="field">
-                  <span className="field-label">Verify privately</span>
-                  <div className="chip-row" style={{ marginBottom: 8 }}>
-                    <button
-                      type="button"
-                      className="chip"
-                      data-selected={channel === "phone"}
-                      onClick={() => setChannel("phone")}
-                    >
-                      Phone
-                    </button>
-                    <button
-                      type="button"
-                      className="chip"
-                      data-selected={channel === "email"}
-                      onClick={() => setChannel("email")}
-                    >
-                      Email
-                    </button>
-                  </div>
+                  <label htmlFor="offer-contact">
+                    Email address for private verification
+                  </label>
                   <input
                     id="offer-contact"
                     className="input"
-                    type={channel === "phone" ? "tel" : "email"}
+                    type="email"
                     value={contact}
                     onChange={(event) => setContact(event.target.value)}
                     placeholder="Never shown on the Ask"
-                    autoComplete={channel === "phone" ? "tel" : "email"}
+                    autoComplete="email"
                   />
                 </div>
                 {verificationSent ? (
@@ -479,7 +486,8 @@ export function PublicAsk({
                 full
                 disabled={
                   pending ||
-                  name.trim().length < 1 ||
+                  firstName.trim().length < 1 ||
+                  lastName.trim().length < 1 ||
                   contact.trim().length < 5 ||
                   description.trim().length < 10 ||
                   (mode === "lend" && itemName.trim().length < 1)

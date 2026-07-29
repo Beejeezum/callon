@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <AppShell publicMode hideNav>
       <div className="page-shell">
-        <MobileHeader title="Call On" actions={false} />
+        <MobileHeader title="Paseos Community Sharing" actions={false} />
         <div className="content narrow empty-state">
           <div className="empty-icon">
             <MagnifyingGlass size={34} />
@@ -17,7 +17,7 @@ export default function NotFound() {
             Circle you cannot access.
           </p>
           <ButtonLink href="/" full>
-            Go to Call On
+            Go to Paseos Community Sharing
           </ButtonLink>
         </div>
       </div>

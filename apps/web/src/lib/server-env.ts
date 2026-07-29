@@ -3,6 +3,10 @@ import { z } from "zod";
 
 const serverSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  PILOT_ADMIN_EMAIL_SHA256: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .optional(),
   SHARE_TOKEN_PEPPER: z.string().min(32).optional(),
   LOCATION_ENCRYPTION_KEY_V1: z.string().min(32).optional(),
   CRON_SECRET: z.string().min(16).optional(),
@@ -17,6 +21,7 @@ const serverSchema = z.object({
 
 export const serverEnv = serverSchema.parse({
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  PILOT_ADMIN_EMAIL_SHA256: process.env.PILOT_ADMIN_EMAIL_SHA256,
   SHARE_TOKEN_PEPPER: process.env.SHARE_TOKEN_PEPPER,
   LOCATION_ENCRYPTION_KEY_V1: process.env.LOCATION_ENCRYPTION_KEY_V1,
   CRON_SECRET: process.env.CRON_SECRET,

@@ -1,8 +1,20 @@
 # Deployment Runbook
 
+## Approved Netlify target
+
+Use only DreamCraftLabs project `callonapp`:
+`https://app.netlify.com/projects/callonapp/overview`.
+
+Before pushing a release candidate, disconnect `Beejeezum/callon` from
+Letterhead, `callon-neighbors`, and any automatically named legacy site. A pull
+request check from one of those projects is not valid release evidence.
+
 ## Preview
 
-Every pull request creates a Netlify Deploy Preview with mock providers and a non-production database branch/project. Run CI and Playwright. Never connect previews to production Supabase.
+Every pull request creates a Netlify Deploy Preview with mock providers or a
+non-production database branch/project. Run CI and Playwright. Never expose
+production data, unrestricted email recipients, or production provider secrets
+to a deploy preview.
 
 ## Staging
 

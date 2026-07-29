@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 
 type Actor = { email: string; profileId: string; displayName: string };
 export type E2EProjectState = {
+  circleId: string;
   circleName: string;
   requester: Actor;
   lender: Actor;
@@ -105,7 +106,26 @@ export default async function globalSetup() {
       project === "mobile-chromium"
         ? `Maple Grove Mobile ${run.slice(-8)}`
         : `Maple Grove Desktop ${run.slice(-8)}`;
+    const { data: circleId, error: circleError } = await supabase.rpc(
+      "provision_circle",
+      {
+        p_input: {
+          name: circleName,
+          slug: `maple-grove-${suffix}`.slice(0, 64),
+          description: "A synthetic private Circle for local journey QA.",
+          joinPolicy: "invite_only",
+          generalArea: "Maple Grove test area",
+          adminProfileId: created.requester.profileId,
+          settings: { syntheticE2E: true },
+        },
+      },
+    );
+    if (circleError || !circleId) {
+      throw circleError ?? new Error("Circle seed failed.");
+    }
+
     state[project] = {
+      circleId,
       circleName,
       requester: created.requester,
       lender: created.lender,

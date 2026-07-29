@@ -1,6 +1,8 @@
 # Service Accounts, Ownership, and Environment Setup
 
-This is the exact external-account map. Create accounts under a company-controlled email domain and shared organization, not a founder’s personal login. Store recovery codes and emergency credentials in an approved password manager.
+This is the external-account map. The Paseos pilot currently uses owner-controlled
+accounts; store recovery codes and emergency credentials in a password manager
+and add a backup owner before expanding beyond the pilot.
 
 ## 1. Ownership model
 
@@ -57,10 +59,12 @@ Do not put provider secrets in GitHub repository variables unless a specific Act
 
 ## 4. Netlify setup
 
-Create one company team and one project initially:
+The approved pilot target is:
 
 ```text
-Project: call-on-web
+Team: DreamCraftLabs
+Project: callonapp
+Dashboard: https://app.netlify.com/projects/callonapp/overview
 Framework: Next.js
 Base directory: unset (repository root)
 Package directory: apps/web
@@ -69,6 +73,10 @@ Preview branches: all non-main branches
 Staging domain: staging.<domain> mapped to staging branch or a custom environment
 Production domain: app.<domain> or <domain>
 ```
+
+Do not deploy Call On from the Letterhead account, the earlier
+`callon-neighbors` project, or any automatically named legacy Netlify project.
+Disconnect `Beejeezum/callon` from those sites before the production merge.
 
 Environment mapping:
 
@@ -92,7 +100,14 @@ Configure:
 
 ## 5. Supabase setup
 
-Create a company organization and two independent projects:
+The GitHub repository is connected to the existing hosted Supabase project
+under BrucePinchbeck Org. Its working directory is `.`, production branch is
+`main`, and production migration sync is enabled. Automatic preview branching
+is limited to three branches and only runs when `supabase/` changes. Monitor
+branching charges.
+
+Before launch, decide whether to retain that project as production and create a
+separate staging project. The preferred topology remains:
 
 ```text
 call-on-staging

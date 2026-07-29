@@ -53,9 +53,8 @@ export async function signInWithEmailOtp(
 ) {
   await page.context().clearCookies();
   await page.goto(`/login?next=${encodeURIComponent(next)}`);
-  await page.getByRole("button", { name: "Email" }).click();
   await page.getByLabel("Email address").fill(email);
-  await page.getByRole("button", { name: "Send one-time code" }).click();
+  await page.getByRole("button", { name: "Email my one-time code" }).click();
   await page.getByLabel("Six-digit code").waitFor();
 
   const supabase = await testAdmin();
@@ -80,8 +79,11 @@ export async function submitOfferWithEmailOtp(
   await page
     .getByLabel("Tell the requester what you can contribute")
     .fill("I can lend a charged cordless drill with a spare battery.");
-  await page.getByLabel("First name").fill(displayName);
-  await page.getByRole("button", { name: "Email" }).click();
+  const [firstName, ...lastNameParts] = displayName.split(" ");
+  await page.getByLabel("First name").fill(firstName);
+  await page
+    .getByLabel("Last name")
+    .fill(lastNameParts.join(" ") || "Neighbor");
   await page.locator("#offer-contact").fill(email);
   await page.getByRole("button", { name: "Send verification code" }).click();
   await page.locator("#offer-otp").waitFor();
@@ -95,6 +97,38 @@ export async function submitOfferWithEmailOtp(
   if (error || !otp) throw error ?? new Error("Could not generate test OTP.");
   await page.locator("#offer-otp").fill(otp);
   await page.getByRole("button", { name: "Submit privately" }).click();
+}
+
+export async function joinWithEmailOtp(
+  page: Page,
+  inviteUrl: string,
+  email: string,
+  displayName: string,
+  circleName: string,
+) {
+  await page.context().clearCookies();
+  await page.goto(inviteUrl);
+  const [firstName, ...lastNameParts] = displayName.split(" ");
+  await page.getByLabel("First name").fill(firstName);
+  await page
+    .getByLabel("Last name")
+    .fill(lastNameParts.join(" ") || "Neighbor");
+  await page.getByLabel("Email address").fill(email);
+  await page.getByRole("button", { name: "Email my one-time code" }).click();
+  await page.getByLabel("Six-digit code").waitFor();
+
+  const supabase = await testAdmin();
+  const { data, error } = await supabase.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+  });
+  const otp = data.properties?.email_otp;
+  if (error || !otp) throw error ?? new Error("Could not generate test OTP.");
+  await page.getByLabel("Six-digit code").fill(otp);
+  await page
+    .getByRole("button", { name: `Verify and join ${circleName}` })
+    .click();
+  await expect(page).toHaveURL((url) => url.pathname === "/");
 }
 
 export async function expectNoSeriousAccessibilityViolations(page: Page) {

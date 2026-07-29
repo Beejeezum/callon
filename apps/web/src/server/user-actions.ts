@@ -1,24 +1,11 @@
 "use server";
 
+import { createResourceSchema, updateResourceSchema } from "@call-on/contracts";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { isSupabaseConfigured } from "@/lib/public-env";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { actionFailure, actionSuccess } from "./action-result";
-
-const resourceUpdateSchema = z.object({
-  resourceId: z.uuid(),
-  title: z.string().trim().min(1).max(100),
-  description: z.string().trim().max(800),
-  visibility: z.enum(["private", "match_only", "circle"]),
-  willingness: z.enum([
-    "happy_to_be_asked",
-    "community_projects_only",
-    "weekends",
-    "paused",
-  ]),
-  status: z.enum(["active", "paused", "retired"]),
-});
 
 const profileUpdateSchema = z.object({
   displayName: z.string().trim().min(1).max(80),
@@ -29,7 +16,7 @@ const profileUpdateSchema = z.object({
 });
 
 export async function updateResourceAction(input: unknown) {
-  const parsed = resourceUpdateSchema.safeParse(input);
+  const parsed = updateResourceSchema.safeParse(input);
   if (!parsed.success) {
     return actionFailure(
       "VALIDATION_FAILED",
@@ -40,18 +27,9 @@ export async function updateResourceAction(input: unknown) {
   if (!isSupabaseConfigured)
     return actionSuccess({ resourceId: parsed.data.resourceId });
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("resources")
-    .update({
-      title: parsed.data.title,
-      description: parsed.data.description,
-      visibility: parsed.data.visibility,
-      willingness: parsed.data.willingness,
-      status: parsed.data.status,
-    })
-    .eq("id", parsed.data.resourceId)
-    .select("id")
-    .single();
+  const { data, error } = await supabase.rpc("update_resource_settings", {
+    p_input: parsed.data,
+  });
   if (error || !data) {
     return actionFailure(
       "NOT_AUTHORIZED",
@@ -60,7 +38,36 @@ export async function updateResourceAction(input: unknown) {
   }
   revalidatePath(`/resources/${parsed.data.resourceId}`);
   revalidatePath("/activity");
-  return actionSuccess({ resourceId: data.id });
+  return actionSuccess({ resourceId: data });
+}
+
+export async function createResourceAction(input: unknown) {
+  const parsed = createResourceSchema.safeParse(input);
+  if (!parsed.success) {
+    return actionFailure(
+      "VALIDATION_FAILED",
+      "Check the item details and sharing preference.",
+      parsed.error.flatten().fieldErrors,
+    );
+  }
+  if (!isSupabaseConfigured) {
+    return actionSuccess({ resourceId: "preview-resource" });
+  }
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("create_manual_resource", {
+    p_input: parsed.data,
+  });
+  if (error || !data) {
+    return actionFailure(
+      error?.code === "42501" ? "NOT_AUTHORIZED" : "INTERNAL_ERROR",
+      error?.code === "42501"
+        ? "Only active Paseos members can add items."
+        : "The item could not be saved. Nothing was partially added.",
+    );
+  }
+  revalidatePath("/library");
+  revalidatePath("/activity");
+  return actionSuccess({ resourceId: data });
 }
 
 export async function updateProfileAction(input: unknown) {

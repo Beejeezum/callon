@@ -17,9 +17,11 @@ export default async function ResourcePage({
     <AppShell circleName={session.activeMembership?.circleName}>
       <div className="page-shell">
         <MobileHeader
-          title="Saved item"
-          subtitle="Private by default"
-          backHref="/activity"
+          title={resource.isOwner ? "My shared item" : "Paseos library"}
+          subtitle={
+            resource.isOwner ? "You stay in control" : "Ask before you borrow"
+          }
+          backHref={resource.isOwner ? "/activity" : "/library"}
           actions={false}
         />
         <ResourceDetail resource={resource} />

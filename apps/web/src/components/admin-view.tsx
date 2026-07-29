@@ -5,13 +5,18 @@ import { useState } from "react";
 import {
   Copy,
   LinkSimple,
+  ShieldStar,
   ShieldCheck,
   UserCircle,
   WarningCircle,
 } from "@phosphor-icons/react";
 import type { AdminOverview } from "@/server/admin-queries";
 import { createCircleInviteAction } from "@/server/circle-actions";
-import { moderateMembershipAction } from "@/server/admin-actions";
+import {
+  changeMembershipRoleAction,
+  moderateMembershipAction,
+  revokeCircleInviteAction,
+} from "@/server/admin-actions";
 import { Badge, Button, Card, Chip } from "./ui";
 
 function statusLabel(value: string) {
@@ -27,7 +32,7 @@ export function AdminView({
 }) {
   const router = useRouter();
   const [inviteUrl, setInviteUrl] = useState("");
-  const [inviteUses, setInviteUses] = useState(1);
+  const [inviteUses, setInviteUses] = useState(250);
   const [pending, setPending] = useState("");
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -40,7 +45,7 @@ export function AdminView({
       circleId: data.circleId,
       role: "member",
       maxUses: inviteUses,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       idempotencyKey: inviteKey,
     });
     setPending("");
@@ -58,6 +63,23 @@ export function AdminView({
     window.setTimeout(() => setCopied(false), 1600);
   }
 
+  async function copyWhatsAppNote() {
+    const note = `Hey neighbors 👋
+
+Remember my virtual neighborhood library idea from a while back? I’ve kept noodling on it and built a first Paseos version.
+
+The idea is simple: make a quick Ask when you need a ladder, party table, tool, advice, or a little help—then keep any pickup and return details organized so sharing with a not-yet-familiar neighbor feels easy.
+
+You do not have to inventory your house or promise to lend anything. Join, look around, and add an item only if you feel like it:
+
+${inviteUrl}
+
+Made with neighborly love by Bruce 💚`;
+    await navigator.clipboard.writeText(note);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
   async function moderate(
     membershipId: string,
     action: "activate" | "restrict" | "suspend" | "restore",
@@ -67,6 +89,40 @@ export function AdminView({
     const result = await moderateMembershipAction({
       membershipId,
       action,
+      idempotencyKey: crypto.randomUUID(),
+    });
+    setPending("");
+    if (!result.ok) {
+      setError(result.error.message);
+      return;
+    }
+    router.refresh();
+  }
+
+  async function changeRole(
+    membershipId: string,
+    role: "member" | "moderator" | "circle_admin",
+  ) {
+    setPending(membershipId);
+    setError("");
+    const result = await changeMembershipRoleAction({
+      membershipId,
+      role,
+      idempotencyKey: crypto.randomUUID(),
+    });
+    setPending("");
+    if (!result.ok) {
+      setError(result.error.message);
+      return;
+    }
+    router.refresh();
+  }
+
+  async function revokeInvite(inviteId: string) {
+    setPending(inviteId);
+    setError("");
+    const result = await revokeCircleInviteAction({
+      inviteId,
       idempotencyKey: crypto.randomUUID(),
     });
     setPending("");
@@ -116,13 +172,14 @@ export function AdminView({
           <div>
             <h2>Invite neighbors</h2>
             <p className="muted small" style={{ margin: 0 }}>
-              Links expire in seven days and reveal only Circle preview details.
+              Create one WhatsApp launch link. It grants immediate membership
+              after email verification and can be revoked at any time.
             </p>
           </div>
         </div>
         <div className="form-grid" style={{ marginTop: 16 }}>
           <div className="field">
-            <label htmlFor="invite-uses">Number of permitted joins</label>
+            <label htmlFor="invite-uses">Maximum verified joins</label>
             <input
               id="invite-uses"
               className="input"
@@ -138,25 +195,73 @@ export function AdminView({
             />
           </div>
           <Button full onClick={createInvite} disabled={pending === "invite"}>
-            {pending === "invite" ? "Creating…" : "Create expiring invite"}
+            {pending === "invite" ? "Creating…" : "Create 30-day Paseos invite"}
           </Button>
           {inviteUrl ? (
-            <div className="field">
-              <label htmlFor="invite-url">Invitation link</label>
-              <div className="row">
-                <input
-                  id="invite-url"
-                  className="input"
-                  readOnly
-                  value={inviteUrl}
-                />
-                <Button variant="secondary" onClick={copyInvite}>
-                  <Copy size={17} /> {copied ? "Copied" : "Copy"}
-                </Button>
+            <>
+              <div className="field">
+                <label htmlFor="invite-url">Invitation link</label>
+                <div className="row">
+                  <input
+                    id="invite-url"
+                    className="input"
+                    readOnly
+                    value={inviteUrl}
+                  />
+                  <Button variant="secondary" onClick={copyInvite}>
+                    <Copy size={17} /> {copied ? "Copied" : "Copy"}
+                  </Button>
+                </div>
               </div>
-            </div>
+              <Button full variant="violet" onClick={copyWhatsAppNote}>
+                <Copy size={17} />{" "}
+                {copied ? "Copied note" : "Copy WhatsApp launch note"}
+              </Button>
+            </>
           ) : null}
         </div>
+      </section>
+
+      <section className="section">
+        <h2>Recent invitation links</h2>
+        {data.invites.length ? (
+          <div className="list">
+            {data.invites.map((invite) => (
+              <div className="list-row" key={invite.id}>
+                <LinkSimple size={21} color="var(--green-700)" />
+                <div className="list-content">
+                  <div className="strong small">
+                    {invite.useCount} of {invite.maxUses} joins used
+                  </div>
+                  <div className="tiny muted">
+                    {statusLabel(invite.status)} · expires{" "}
+                    {new Intl.DateTimeFormat("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }).format(new Date(invite.expiresAt))}
+                  </div>
+                </div>
+                {invite.status === "active" ? (
+                  <Button
+                    small
+                    variant="danger"
+                    disabled={pending === invite.id}
+                    onClick={() => revokeInvite(invite.id)}
+                  >
+                    Revoke
+                  </Button>
+                ) : (
+                  <Badge tone="event">{statusLabel(invite.status)}</Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="notice">
+            No links yet. Create one above when you are ready to invite Paseos.
+          </div>
+        )}
       </section>
 
       <section className="section">
@@ -196,6 +301,38 @@ export function AdminView({
                   ) : null}
                   {!own && membership.status === "active" ? (
                     <>
+                      {membership.role !== "moderator" ? (
+                        <Button
+                          small
+                          variant="neutral"
+                          onClick={() => changeRole(membership.id, "moderator")}
+                          disabled={pending === membership.id}
+                        >
+                          Moderator
+                        </Button>
+                      ) : null}
+                      {membership.role !== "circle_admin" ? (
+                        <Button
+                          small
+                          variant="neutral"
+                          onClick={() =>
+                            changeRole(membership.id, "circle_admin")
+                          }
+                          disabled={pending === membership.id}
+                        >
+                          <ShieldStar size={16} /> Admin
+                        </Button>
+                      ) : null}
+                      {membership.role !== "member" ? (
+                        <Button
+                          small
+                          variant="neutral"
+                          onClick={() => changeRole(membership.id, "member")}
+                          disabled={pending === membership.id}
+                        >
+                          Member
+                        </Button>
+                      ) : null}
                       <Button
                         small
                         variant="secondary"

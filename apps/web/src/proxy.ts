@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured, publicEnv } from "@/lib/public-env";
 
 const publicPrefixes = [
+  "/demo",
   "/login",
   "/join/",
   "/share/",
@@ -12,6 +13,7 @@ const publicPrefixes = [
 ];
 
 function isPublicPath(pathname: string) {
+  if (pathname === "/") return true;
   return publicPrefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(prefix),
   );

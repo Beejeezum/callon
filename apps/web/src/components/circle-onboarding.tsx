@@ -1,41 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CirclesThreePlus, LockKey } from "@phosphor-icons/react";
+import { useState } from "react";
+import { ArrowRight, CirclesThreePlus, LockKey } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { createCircleAction } from "@/server/circle-actions";
-import { Button, Card, PrivacyCallout } from "./ui";
+import { bootstrapPaseosPilotAction } from "@/server/pilot-actions";
+import { Button, ButtonLink, Card, PrivacyCallout } from "./ui";
 
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 64);
-}
-
-export function CircleOnboarding({ displayName }: { displayName: string }) {
+export function CircleOnboarding({
+  displayName,
+  canBootstrapPaseos,
+}: {
+  displayName: string;
+  canBootstrapPaseos: boolean;
+}) {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [generalArea, setGeneralArea] = useState("");
-  const [description, setDescription] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const [idempotencyKey] = useState(() => crypto.randomUUID());
-  const slug = useMemo(() => slugify(name), [name]);
 
-  async function createCircle() {
+  async function bootstrapPaseos() {
     setPending(true);
     setError("");
-    const result = await createCircleAction({
-      name,
-      slug,
-      description,
-      generalArea,
-      joinPolicy: "invite_only",
-      idempotencyKey,
-    });
+    const result = await bootstrapPaseosPilotAction();
     setPending(false);
     if (!result.ok) {
       setError(result.error.message);
@@ -51,70 +36,49 @@ export function CircleOnboarding({ displayName }: { displayName: string }) {
           <CirclesThreePlus size={34} weight="duotone" />
         </span>
         <div className="eyebrow">Welcome, {displayName}</div>
-        <h1>Create your first private Circle</h1>
+        <h1>You’re verified—now join your neighbors</h1>
         <p className="lede">
-          A Circle is the trusted group that can see local Asks—your HOA,
-          building, block, school group, or club.
+          Your account is ready, but it is not attached to a private community
+          yet.
         </p>
       </div>
       <Card className="pad">
-        <div className="form-grid">
-          <div className="field">
-            <label htmlFor="circle-name">Circle name</label>
-            <input
-              id="circle-name"
-              className="input"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Oakridge neighbors"
-              maxLength={100}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="circle-area">General area</label>
-            <input
-              id="circle-area"
-              className="input"
-              value={generalArea}
-              onChange={(event) => setGeneralArea(event.target.value)}
-              placeholder="Oakridge community"
-              maxLength={100}
-            />
-            <span className="help-text">
-              Keep this broad. Do not enter a home address.
+        <div className="stack">
+          <div className="row-start">
+            <span className="choice-icon">
+              <LockKey size={20} />
             </span>
+            <div>
+              <h2>Have the Paseos WhatsApp invitation?</h2>
+              <p className="muted small" style={{ marginBottom: 0 }}>
+                Reopen that private link. After email verification, membership
+                is immediate—there is no approval queue.
+              </p>
+            </div>
           </div>
-          <div className="field">
-            <label htmlFor="circle-description">Short description</label>
-            <textarea
-              id="circle-description"
-              className="textarea"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="A private space for concrete neighbor-to-neighbor help."
-              maxLength={1200}
-            />
-          </div>
+          <ButtonLink href="/" full variant="secondary">
+            Return to the Paseos welcome page <ArrowRight size={18} />
+          </ButtonLink>
+          {canBootstrapPaseos ? (
+            <>
+              <div className="notice">
+                <strong>First-admin setup recognized.</strong> This verified
+                email may initialize Paseos and become its first administrator.
+              </div>
+              <Button full onClick={bootstrapPaseos} disabled={pending}>
+                <CirclesThreePlus size={19} />
+                {pending ? "Setting up Paseos…" : "Set up Paseos as admin"}
+              </Button>
+            </>
+          ) : null}
           {error ? <div className="notice error">{error}</div> : null}
-          <Button
-            full
-            disabled={
-              pending ||
-              name.trim().length < 2 ||
-              slug.length < 3 ||
-              generalArea.trim().length < 2
-            }
-            onClick={createCircle}
-          >
-            <CirclesThreePlus size={19} />
-            {pending ? "Creating Circle…" : "Create private Circle"}
-          </Button>
         </div>
       </Card>
       <div className="spacer-24" />
       <PrivacyCallout>
-        <LockKey size={20} /> The Circle starts invitation-only. Creating it
-        does not publish your profile, address, or possessions.
+        <LockKey size={20} /> New communities are reviewed during the Paseos
+        pilot instead of being created automatically. That keeps spam and
+        accidental public communities out of the product.
       </PrivacyCallout>
     </div>
   );

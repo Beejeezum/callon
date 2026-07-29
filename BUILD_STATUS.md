@@ -1,8 +1,8 @@
 # Build Status
 
-**Handoff version:** 2.1
+**Handoff version:** 2.2 Paseos pilot
 
-**Verified:** 2026-07-26
+**Verified:** 2026-07-29
 
 **Status:** The deterministic P0 application is implemented and verified
 locally. Production service activation and pilot launch remain human-gated.
@@ -12,13 +12,13 @@ locally. Production service activation and pilot launch remain human-gated.
 | Area | Status | Evidence |
 |---|---|---|
 | Repository and toolchain | Complete | Node 24, pnpm 11, strict TypeScript, frozen lockfile, GitHub Actions, Netlify configuration |
-| Authentication | Complete locally | Passwordless phone/email OTP flow, callback handling, SSR session refresh, private-route guards |
-| Circles and membership | Complete locally | Circle creation, scoped invites, join, active/restricted/suspended states, admin controls |
+| Authentication | Complete locally | Passwordless verified email OTP, first/last-name capture, callback handling, SSR session refresh, private-route guards |
+| Circles and membership | Complete locally | Paseos instant-join invite, scoped guest grants, active/restricted/suspended states, operator-only Circle provisioning, admin controls |
 | Asks and Needs | Complete locally | Three-step creation, deterministic validation, publish, safe share links, owner/member-specific views |
 | Offers | Complete locally | Scoped guest and active-member contribution, unlisted items, private requester review, decline/withdraw foundations |
 | Commitments | Complete locally | Transactional acceptance, private messages, encrypted exact location, participant-only projection |
 | Loans | Complete locally | Handoff, custody, extensions, return, confirmation, append-only events, incident reporting |
-| Progressive resources | Complete locally | Optional private item memory after a successful exchange |
+| Progressive resources | Complete locally | Optional private memory, quick-add wizard, Circle-visible browsing, owner settings |
 | Notifications | Complete locally | Transactional outbox, quiet hours, bounded worker, retry/dead-letter, mock and Resend adapters |
 | Admin and safety | Complete for P0 | Membership moderation, incident summaries, no default access to messages/location/evidence |
 | AI drafting | Deferred P1 | Route seam remains disabled by default |
@@ -26,10 +26,10 @@ locally. Production service activation and pilot launch remain human-gated.
 
 ## Verification evidence
 
-- `supabase db reset` — migrations `001` through `012` apply cleanly from an
+- `supabase db reset` — migrations `001` through `013` apply cleanly from an
   empty local PostgreSQL database.
 - `pnpm db:lint` — no schema errors.
-- `pnpm db:test` — **88 of 88** pgTAP assertions pass.
+- `pnpm db:test` — **109 of 109** pgTAP assertions pass.
 - `pnpm typecheck`, `pnpm lint`, and `pnpm test` — pass.
 - Shared contracts — 2 tests pass.
 - Web unit/component checks — 3 tests pass.
@@ -38,7 +38,7 @@ locally. Production service activation and pilot launch remain human-gated.
 - `pnpm check:client-bundle` — no server-only secret identifiers found in the
   browser bundle.
 - `pnpm format:check` — all tracked source and documentation are formatted.
-- Playwright real-data suite — **16 of 16** journeys pass across mobile and
+- Playwright real-data suite — **18 of 18** journeys pass across mobile and
   desktop Chromium.
 - Automated accessibility — representative journeys have zero serious or
   critical WCAG A/AA violations.
@@ -57,15 +57,18 @@ Local development uses an isolated local Supabase stack and mock email
 delivery. No production database, provider credential, domain, message, legal
 policy, or migration was created or approved by Codex.
 
-The public Netlify deployment can continue to run in preview/mock mode until
-the production Supabase and provider environment variables are supplied by the
-account owner. Preview deployments must never use production user data or
-production provider credentials.
+The approved Netlify target is the **DreamCraftLabs** team project
+`callonapp`. The earlier `callon-neighbors`/Letterhead-linked project is not an
+approved deployment target. A branch deploy may use local/staging Supabase
+values; production data and provider credentials must not be exposed to
+untrusted deploy previews.
 
 ## Remaining human gates
 
-- Review and merge the implementation pull request after remote CI and Netlify
-  preview evidence pass.
+- Disconnect the GitHub repository from every non-DreamCraftLabs Netlify site,
+  then verify a branch deploy in DreamCraftLabs `callonapp`.
+- Review and merge the implementation pull request only after remote CI and the
+  correct Netlify preview pass.
 - Create production service accounts and approve secret ownership.
 - Approve legal, privacy, prohibited-item, safety, and incident-response policy.
 - Review production RLS and exact-location key custody with a qualified security

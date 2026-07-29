@@ -11,6 +11,7 @@ import {
   CirclesThreePlus,
   House,
   ListChecks,
+  Package,
   Plus,
   UserCircle,
 } from "@phosphor-icons/react";
@@ -18,7 +19,7 @@ import { isSupabaseConfigured } from "@/lib/public-env";
 
 const nav = [
   { href: "/", label: "Home", icon: House },
-  { href: "/activity", label: "Asks", icon: ListChecks },
+  { href: "/library", label: "Library", icon: Package },
   { href: "/asks/new", label: "Create", icon: Plus, create: true },
   { href: "/inbox", label: "Inbox", icon: ChatCircle },
   { href: "/profile", label: "Me", icon: UserCircle },
@@ -59,9 +60,7 @@ export function AppShell({
             />
             <span className="brand-name">Call On</span>
           </Link>
-          <p className="brand-tagline">
-            Things we have. Neighbors we trust. Real projects made easier.
-          </p>
+          <p className="brand-tagline">Neighbor-built sharing for Paseos.</p>
           <nav className="rail-nav">
             <Link
               className="rail-link"
@@ -69,6 +68,13 @@ export function AppShell({
               data-active={matches(pathname, "/")}
             >
               <House size={20} weight="duotone" /> Home
+            </Link>
+            <Link
+              className="rail-link"
+              href="/library"
+              data-active={matches(pathname, "/library")}
+            >
+              <Package size={20} weight="duotone" /> Paseos library
             </Link>
             <Link
               className="rail-link"

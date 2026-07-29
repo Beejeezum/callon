@@ -6,7 +6,7 @@ Do not record secret values here. Record only ownership and where the credential
 |---|---|---|---|---|---|---|---|---|---|---|
 | GitHub |  | all |  |  |  |  |  |  |  | Not started |
 | Password manager |  | all |  |  |  |  |  |  |  | Not started |
-| Netlify | call-on-web | staging/prod |  |  |  |  |  |  |  | Not started |
+| Netlify | DreamCraftLabs / callonapp | staging/prod | Bruce |  |  |  |  | Bruce |  | In progress |
 | Supabase | call-on-staging | staging |  |  |  |  |  |  |  | Not started |
 | Supabase | call-on-production | prod |  |  |  |  |  |  |  | Not started |
 | Cloudflare |  | staging/prod |  |  |  |  |  |  |  | Not started |
