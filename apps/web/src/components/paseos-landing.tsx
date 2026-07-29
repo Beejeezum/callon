@@ -28,15 +28,15 @@ export function PaseosLanding({ previewMode }: { previewMode: boolean }) {
 
       <div className="content narrow paseos-welcome">
         <div className="eyebrow">A private sharing space for Paseos</div>
-        <h2 className="paseos-display">Ask before you buy.</h2>
+        <h2 className="paseos-display">A neighborly way to ask for a hand.</h2>
         <p className="lede">
-          Borrow useful things, offer a hand, and keep the pickup and return
-          details out of the group-chat shuffle.
+          Borrow something useful, share what you have, or lend a little
+          know-how—without losing pickup and return details in the group chat.
         </p>
 
         <div className="stack-sm paseos-entry-actions">
           <ButtonLink href="/guide" full>
-            See how it works <ArrowRight size={18} />
+            See one Ask in action <ArrowRight size={18} />
           </ButtonLink>
           {previewMode ? (
             <ButtonLink href="/demo" full variant="secondary">
@@ -59,7 +59,7 @@ export function PaseosLanding({ previewMode }: { previewMode: boolean }) {
             service.
           </span>
           <span className="row centered wrap">
-            <Link href="/guide">How it works</Link>
+            <Link href="/guide">Follow one Ask</Link>
             <span aria-hidden>·</span>
             <Link href="/login">Member sign in</Link>
           </span>

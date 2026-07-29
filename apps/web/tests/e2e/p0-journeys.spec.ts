@@ -20,19 +20,19 @@ test("public welcome and guide explain the product without signup overload", asy
 }) => {
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Ask before you buy." }),
+    page.getByRole("heading", {
+      name: "A neighborly way to ask for a hand.",
+    }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "See how it works" }).click();
+  await page.getByRole("link", { name: "See one Ask in action" }).click();
   await expect(page).toHaveURL("/guide");
   await expect(
     page.getByRole("heading", {
-      name: "Borrow a thing. Meet a neighbor.",
+      name: "Make the Ask. We’ll keep it straight.",
     }),
   ).toBeVisible();
   await expect(page.locator(".guide-step-list > li")).toHaveCount(5);
-  await expect(
-    page.getByText(/No app download, address, or item list/),
-  ).toBeVisible();
+  await expect(page.getByText(/No address is required to join/)).toBeVisible();
   await expectNoSeriousAccessibilityViolations(page);
 });
 

@@ -207,7 +207,7 @@ export function AuthForm({
       <PrivacyCallout>
         <LockKey size={20} />{" "}
         {join
-          ? "No address and no item list. Pickup details come later, only when a share is accepted."
+          ? "No address is needed to join. Pickup details come later, only when an Offer is accepted."
           : "Your email and pickup details stay off Paseos community pages."}
       </PrivacyCallout>
       {join ? (

@@ -8,7 +8,7 @@ export const pilotCommunity = {
     "A private, neighbor-built place to ask for useful things, share what we already have, and keep handoffs and returns easy.",
   attribution: "Made with neighborly love by Bruce",
   welcomeMessage:
-    "Ask before you buy. Someone a few doors away may already have exactly what would make your project, party, or weekend easier.",
+    "Need a hand? Someone a few doors away may have the thing, time, or know-how that would make your project, party, or weekend easier.",
 } as const;
 
 export const commonResourceSuggestions = [

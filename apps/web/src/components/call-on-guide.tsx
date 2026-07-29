@@ -5,10 +5,10 @@ import {
   ChatCircleDots,
   CheckCircle,
   HandHeart,
+  ListChecks,
   LockKey,
   Megaphone,
   Package,
-  SignIn,
   WhatsappLogo,
 } from "@phosphor-icons/react/dist/ssr";
 import { pilotCommunity } from "@/lib/pilot";
@@ -17,29 +17,29 @@ import { GuideShareButton } from "./guide-share-button";
 
 const guideSteps = [
   {
-    icon: SignIn,
-    title: "Join privately",
-    copy: "Open Bruce’s Paseos link, add your name and email, then enter the one-time code. No app download, address, or item list.",
+    icon: Megaphone,
+    title: "Create one Ask",
+    copy: "Say what you’re doing, when you need help, and what would make it easier.",
   },
   {
-    icon: Megaphone,
-    title: "Make a concrete Ask",
-    copy: "Say what you’re doing and what would help—an item, advice, a volunteer, or an alternative.",
+    icon: ListChecks,
+    title: "Add what would help",
+    copy: "Make a short checklist—an item, advice, extra hands, or an alternative. Add more than one need when the job calls for it.",
   },
   {
     icon: WhatsappLogo,
-    title: "Share it in WhatsApp",
-    copy: "Call On creates one tidy link. The group chat stays the meeting place; the app keeps the checklist.",
+    title: "Share one tidy link",
+    copy: "Drop it into WhatsApp. The chat stays friendly and familiar while the Ask always shows what is covered and what is still needed.",
   },
   {
     icon: HandHeart,
-    title: "Neighbors offer privately",
-    copy: "People can lend, give, help, or advise. Offers go only to the requester, and saying no stays easy.",
+    title: "Choose the help that fits",
+    copy: "Neighbors offer privately. You see who can help with what, then accept the Offers that work for your Ask.",
   },
   {
     icon: Package,
-    title: "Keep the handoff easy",
-    copy: "Accepted neighbors coordinate pickup, due dates, reminders, and returns in one private thread.",
+    title: "Let Call On keep track",
+    copy: "Accepted help becomes a clear commitment with private pickup details, due dates, extensions, reminders, and return confirmation.",
   },
 ] as const;
 
@@ -74,10 +74,10 @@ export function CallOnGuide({
             Paseos Community Sharing
           </Link>
           <div className="eyebrow guide-eyebrow">The 60-second guide</div>
-          <h1>Borrow a thing. Meet a neighbor.</h1>
+          <h1>Make the Ask. We’ll keep it straight.</h1>
           <p>
-            Call On turns “Does anyone have…?” into a simple Ask, a private
-            offer, and a handoff everyone can remember.
+            Tell Paseos what you need. Call On turns neighbor Offers into a
+            clear checklist, private handoffs, and return reminders.
           </p>
         </div>
       </header>
@@ -85,11 +85,15 @@ export function CallOnGuide({
       <div className="content narrow guide-content">
         <section className="guide-intro" aria-labelledby="guide-start">
           <div>
-            <div className="eyebrow">The short version</div>
-            <h2 id="guide-start">Ask first. List later—if ever.</h2>
+            <div className="eyebrow">The whole idea</div>
+            <h2 id="guide-start">One Ask. One place to keep track.</h2>
             <p className="lede">
-              You do not need to inventory your garage. Start with a real need,
-              and save an item only after sharing it proves useful.
+              Create your Ask, share it in WhatsApp, and see exactly who offered
+              what, what you accepted, and when borrowed things are due back.
+            </p>
+            <p className="muted small">
+              First time here? Bruce’s private Paseos link gets you in with your
+              name, email, and a one-time code. No address is required to join.
             </p>
           </div>
           <GuideShareButton url={guideUrl} />
@@ -98,8 +102,8 @@ export function CallOnGuide({
         <section className="section" aria-labelledby="guide-steps">
           <div className="section-heading guide-section-heading">
             <div>
-              <div className="eyebrow">One friendly loop</div>
-              <h2 id="guide-steps">How it works</h2>
+              <div className="eyebrow">Follow one request</div>
+              <h2 id="guide-steps">From “could anyone?” to all set</h2>
             </div>
             <span className="guide-time">About 1 minute to join</span>
           </div>
@@ -176,9 +180,10 @@ export function CallOnGuide({
             </Card>
             <Card className="pad">
               <Package size={24} weight="duotone" aria-hidden />
-              <h3>No garage inventory</h3>
+              <h3>A clean record</h3>
               <p>
-                Add an item only when you want to. Every loan still needs a yes.
+                See who committed to what, confirm returns, and close the Ask
+                when everything is settled.
               </p>
             </Card>
           </div>
@@ -187,12 +192,10 @@ export function CallOnGuide({
         <section className="guide-cta" aria-labelledby="guide-ready">
           <div>
             <div className="eyebrow">That’s the whole idea</div>
-            <h2 id="guide-ready">
-              Useful things. Easier asks. More neighbors.
-            </h2>
+            <h2 id="guide-ready">Make the Ask. Let Call On keep track.</h2>
             <p>
-              Join through the private Paseos link in WhatsApp. Already in? Pick
-              the next small thing you could use a hand with.
+              Join through the private Paseos link in WhatsApp. Already in?
+              Start with the next small thing you could use a hand with.
             </p>
           </div>
           <div className="stack-sm">

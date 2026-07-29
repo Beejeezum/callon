@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "How Call On works in Paseos",
     description:
-      "Ask before you buy. See how private Asks, neighbor Offers, and simple return tracking work.",
+      "A neighborly way to ask for a hand. See how private Asks, neighbor Offers, and simple return tracking work.",
     images: [
       {
         url: "/assets/paseos-entrance.png",
