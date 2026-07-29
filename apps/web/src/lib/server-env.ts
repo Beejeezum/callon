@@ -1,22 +1,24 @@
 import "server-only";
 import { z } from "zod";
 
+const blankToUndefined = (value: unknown) => (value === "" ? undefined : value);
+
+const optional = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess(blankToUndefined, schema.optional());
+
 const serverSchema = z.object({
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
-  PILOT_ADMIN_EMAIL_SHA256: z
-    .string()
-    .regex(/^[a-f0-9]{64}$/)
-    .optional(),
-  SHARE_TOKEN_PEPPER: z.string().min(32).optional(),
-  LOCATION_ENCRYPTION_KEY_V1: z.string().min(32).optional(),
-  CRON_SECRET: z.string().min(16).optional(),
+  SUPABASE_SERVICE_ROLE_KEY: optional(z.string().min(1)),
+  PILOT_ADMIN_EMAIL_SHA256: optional(z.string().regex(/^[a-f0-9]{64}$/)),
+  SHARE_TOKEN_PEPPER: optional(z.string().min(32)),
+  LOCATION_ENCRYPTION_KEY_V1: optional(z.string().min(32)),
+  CRON_SECRET: optional(z.string().min(16)),
   EMAIL_PROVIDER: z.enum(["mock", "resend"]).default("mock"),
-  RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_API_KEY: optional(z.string().min(1)),
   EMAIL_FROM: z.string().min(3).default("Call On <hello@example.test>"),
   AI_DRAFTS_ENABLED: z.enum(["true", "false"]).default("false"),
   WHATSAPP_ENABLED: z.enum(["true", "false"]).default("false"),
-  WHATSAPP_VERIFY_TOKEN: z.string().min(1).optional(),
-  WHATSAPP_APP_SECRET: z.string().min(1).optional(),
+  WHATSAPP_VERIFY_TOKEN: optional(z.string().min(1)),
+  WHATSAPP_APP_SECRET: optional(z.string().min(1)),
 });
 
 export const serverEnv = serverSchema.parse({

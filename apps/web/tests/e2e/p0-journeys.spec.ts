@@ -99,7 +99,12 @@ test("requester accepts privately, adds encrypted logistics, and checks out", as
 }, testInfo) => {
   const state = await projectState(testInfo);
   await signInWithEmailOtp(page, state.requester.email);
-  await page.getByRole("link", { name: /Putting up garage shelves/i }).click();
+  // A retry of the creation test can leave an older synthetic Ask behind.
+  // The home feed is newest-first, so target the current run's latest Ask.
+  await page
+    .getByRole("link", { name: /Putting up garage shelves/i })
+    .first()
+    .click();
   await page.waitForURL(/\/asks\/[^/]+$/);
   askUrl = page.url();
   await page.getByRole("link", { name: /Review private offers/i }).click();
@@ -293,7 +298,10 @@ test("active Circle member can offer without a shared link", async ({
   await page.waitForURL(/\/share\/[^/]+$/);
 
   await signInWithEmailOtp(page, state.requester.email);
-  await page.getByRole("link", { name: /Moving garden soil/i }).click();
+  await page
+    .getByRole("link", { name: /Moving garden soil/i })
+    .first()
+    .click();
   await page.waitForURL(/\/asks\/[^/]+$/);
   memberAskUrl = page.url();
 
