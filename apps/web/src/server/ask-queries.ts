@@ -18,6 +18,7 @@ type NeedRow = {
 type AskRow = {
   id: string;
   created_by?: string;
+  status?: Ask["status"];
   ask_type: "quick_need" | "project" | "event" | "offer";
   title: string;
   description: string;
@@ -56,6 +57,7 @@ function mapAsk(row: AskRow): Ask {
   );
   return {
     id: row.id,
+    status: row.status ?? "open",
     title: row.title,
     description: row.description,
     label:
@@ -80,7 +82,7 @@ export const getCircleAsks = cache(
     const { data, error } = await supabase
       .from("asks")
       .select(
-        "id, ask_type, title, description, needed_by, general_location, cover_image_path",
+        "id, status, ask_type, title, description, needed_by, general_location, cover_image_path",
       )
       .eq("circle_id", circleId)
       .in("status", ["open", "partially_fulfilled", "ready", "in_progress"])
@@ -124,7 +126,7 @@ export const getMemberAsk = cache(
     const { data, error } = await supabase
       .from("asks")
       .select(
-        "id, created_by, ask_type, title, description, needed_by, general_location, cover_image_path",
+        "id, created_by, status, ask_type, title, description, needed_by, general_location, cover_image_path",
       )
       .eq("id", askId)
       .maybeSingle();
