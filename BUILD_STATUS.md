@@ -52,6 +52,9 @@ dedicated SMTP sender and policy approval.
   completed against production.
 - Hosted Auth email template — configured to deliver a numeric OTP matching the
   application UI.
+- Browser/PWA identity — the Call On favicon is explicitly linked in page
+  metadata, renders cleanly at 16 px and 32 px, and the signed-out web-app
+  manifest resolves without an authentication redirect.
 - Boca Raton scheduling — Ask, commitment, return, and extension times are
   stored and rendered as `America/New_York`; summer, winter, round-trip, and DST
   gap tests pass.
