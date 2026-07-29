@@ -181,6 +181,19 @@ test("borrower extension, lender decision, return, and progressive memory", asyn
   await page.getByLabel("Item name").fill("Cordless drill");
   await page.getByRole("button", { name: "Save preference" }).click();
   await expect(page.getByText(/Saved privately/)).toBeVisible();
+
+  await signInWithEmailOtp(
+    page,
+    state.requester.email,
+    new URL(askUrl).pathname,
+  );
+  await page.getByRole("button", { name: "Close this Ask" }).click();
+  await page.getByRole("button", { name: "Mark Ask complete" }).click();
+  await expect(page.getByText("Completed Ask")).toBeVisible();
+  await page.goto("/");
+  await expect(
+    page.getByRole("link", { name: /Putting up garage shelves/i }),
+  ).toHaveCount(0);
 });
 
 test("admin invite, join acceptance, restriction, and restoration", async ({
@@ -277,7 +290,7 @@ test("private surfaces remain scoped across role changes", async ({
     page.getByRole("link", { name: /Review private offers/i }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("heading", { name: "This Ask is covered" }),
+    page.getByRole("heading", { name: "This Ask is complete" }),
   ).toBeVisible();
 });
 

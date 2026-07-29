@@ -9,6 +9,16 @@ export type Need = {
 
 export type Ask = {
   id: string;
+  status?:
+    | "draft"
+    | "open"
+    | "partially_fulfilled"
+    | "ready"
+    | "in_progress"
+    | "completed"
+    | "cancelled"
+    | "archived"
+    | "expired";
   title: string;
   description: string;
   label: "Need help" | "Offering" | "Event";

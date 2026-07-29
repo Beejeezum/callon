@@ -1,15 +1,21 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Check,
   ChatCircle,
+  CheckCircle as CheckCircleIcon,
   ShareNetwork,
   UsersThree,
+  XCircle,
 } from "@phosphor-icons/react";
 import type { Ask } from "@/lib/mock-data";
 import { Badge, Button, ButtonLink, Card, CheckCircle, Progress } from "./ui";
-import { createShareForExistingAskAction } from "@/server/ask-actions";
+import {
+  createShareForExistingAskAction,
+  transitionAskAction,
+} from "@/server/ask-actions";
 import { MemberOfferForm } from "./member-offer-form";
 
 export function AskDetail({
@@ -21,11 +27,35 @@ export function AskDetail({
   viewerIsOwner: boolean;
   canOffer: boolean;
 }) {
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [sharing, setSharing] = useState(false);
   const [shareError, setShareError] = useState("");
   const [shareKey] = useState(() => crypto.randomUUID());
+  const [showCloseOptions, setShowCloseOptions] = useState(false);
+  const [transitioning, setTransitioning] = useState("");
+  const [transitionError, setTransitionError] = useState("");
+  const [transitionKeys] = useState(() => ({
+    complete: crypto.randomUUID(),
+    cancel: crypto.randomUUID(),
+  }));
+
+  const status = ask.status ?? "open";
+  const isActive = [
+    "draft",
+    "open",
+    "partially_fulfilled",
+    "ready",
+    "in_progress",
+  ].includes(status);
+  const statusLabel =
+    status === "partially_fulfilled"
+      ? "Partially covered"
+      : status
+          .split("_")
+          .map((word) => `${word[0]?.toUpperCase() ?? ""}${word.slice(1)}`)
+          .join(" ");
 
   async function share() {
     setSharing(true);
@@ -68,6 +98,23 @@ export function AskDetail({
     }
   }
 
+  async function closeAsk(action: "complete" | "cancel") {
+    setTransitioning(action);
+    setTransitionError("");
+    const result = await transitionAskAction({
+      askId: ask.id,
+      action,
+      idempotencyKey: transitionKeys[action],
+    });
+    setTransitioning("");
+    if (!result.ok) {
+      setTransitionError(result.error.message);
+      return;
+    }
+    setShowCloseOptions(false);
+    router.refresh();
+  }
+
   const covered = ask.needs.filter(
     (need) => need.committed >= need.quantity,
   ).length;
@@ -75,8 +122,8 @@ export function AskDetail({
   return (
     <div className="content">
       <div className="row-between">
-        <Badge tone="need">Open Ask</Badge>
-        {viewerIsOwner ? (
+        <Badge tone={isActive ? "need" : "active"}>{statusLabel} Ask</Badge>
+        {viewerIsOwner && isActive ? (
           <button
             className="icon-button"
             onClick={share}
@@ -170,12 +217,76 @@ export function AskDetail({
                   ? "Link copied"
                   : "Share Ask again"}
             </Button>
+            {!showCloseOptions ? (
+              <Button
+                full
+                variant="neutral"
+                onClick={() => setShowCloseOptions(true)}
+              >
+                Close this Ask
+              </Button>
+            ) : (
+              <Card className="pad">
+                <div className="stack-sm">
+                  <div>
+                    <h3 style={{ marginBottom: 4 }}>Wrap up this Ask</h3>
+                    <p className="muted small" style={{ margin: 0 }}>
+                      Mark it complete when you are all set. Cancel only when
+                      you no longer need the help.
+                    </p>
+                  </div>
+                  {transitionError ? (
+                    <div className="notice error">{transitionError}</div>
+                  ) : null}
+                  <Button
+                    full
+                    disabled={Boolean(transitioning)}
+                    onClick={() => closeAsk("complete")}
+                  >
+                    <CheckCircleIcon size={18} />
+                    {transitioning === "complete"
+                      ? "Completing…"
+                      : "Mark Ask complete"}
+                  </Button>
+                  <Button
+                    full
+                    variant="danger"
+                    disabled={Boolean(transitioning)}
+                    onClick={() => closeAsk("cancel")}
+                  >
+                    <XCircle size={18} />
+                    {transitioning === "cancel" ? "Cancelling…" : "Cancel Ask"}
+                  </Button>
+                  <Button
+                    full
+                    variant="neutral"
+                    disabled={Boolean(transitioning)}
+                    onClick={() => setShowCloseOptions(false)}
+                  >
+                    Keep it open
+                  </Button>
+                </div>
+              </Card>
+            )}
           </section>
         </>
       ) : (
         <section className="section">
-          {canOffer ? (
+          {canOffer && isActive ? (
             <MemberOfferForm ask={ask} />
+          ) : !isActive ? (
+            <Card className="pad soft">
+              <h2>
+                {status === "completed"
+                  ? "This Ask is complete"
+                  : "This Ask is closed"}
+              </h2>
+              <p className="muted small" style={{ marginBottom: 0 }}>
+                {status === "completed"
+                  ? "The requester has everything they need, so new Offers are no longer being accepted."
+                  : "The requester is no longer accepting Offers for this Ask."}
+              </p>
+            </Card>
           ) : (
             <Card className="pad soft">
               <h2>Viewing only</h2>
