@@ -69,9 +69,11 @@ export function AdminView({
 
 Remember my virtual neighborhood library idea from a while back? I’ve kept noodling on it and built a first Paseos version.
 
-The idea is simple: make a quick Ask when you need a ladder, party table, tool, advice, or a little help—then keep any pickup and return details organized so sharing with a not-yet-familiar neighbor feels easy.
+The idea grew into something simpler: when you need a ladder, party table, advice, or an extra pair of hands, create one Ask and share it here.
 
-You do not have to inventory your house or promise to lend anything. Join, look around, and add an item only if you feel like it:
+Neighbors can privately offer what they can, and Call On keeps track of who is helping with what, pickup details, and when borrowed things should come back.
+
+Joining takes about a minute:
 
 ${inviteUrl}
 
