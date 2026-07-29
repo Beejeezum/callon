@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description:
     "A private, neighbor-built way for Paseos residents to ask, share useful things, and keep handoffs and returns easy.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.DEPLOY_PRIME_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.DEPLOY_PRIME_URL ||
       "http://localhost:3000",
   ),
   applicationName: "Paseos Community Sharing",
