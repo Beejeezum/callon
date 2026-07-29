@@ -15,6 +15,22 @@ export const metadata: Metadata = {
       "http://localhost:3000",
   ),
   applicationName: "Paseos Community Sharing",
+  icons: {
+    icon: [
+      {
+        url: "/assets/call-on-favicon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    shortcut: "/assets/call-on-favicon.svg",
+    apple: [
+      {
+        url: "/assets/call-on-logo-mark.png",
+        sizes: "128x128",
+        type: "image/png",
+      },
+    ],
+  },
   robots: { index: false, follow: false },
 };
 
