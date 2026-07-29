@@ -129,6 +129,10 @@ export async function joinWithEmailOtp(
 }
 
 export async function expectNoSeriousAccessibilityViolations(page: Page) {
+  // Next.js streams metadata separately from the page body in development.
+  // Wait for the document title before running axe so the check asserts the
+  // settled page rather than a transient metadata-free document.
+  await expect(page).toHaveTitle(/\S+/);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
