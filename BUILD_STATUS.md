@@ -44,9 +44,9 @@ locally. Production service activation and pilot launch remain human-gated.
   critical WCAG A/AA violations.
 - Notification endpoint — unauthorized request returns `401`; authorized mock
   batches drain to zero pending jobs with no failures.
-- Manual in-app review — login, authenticated home, owner Ask detail, and Ask
-  creation are visually coherent; internal design tooling is not exposed in
-  user navigation.
+- Product Design QA — Paseos welcome, preview home, sign-in, and responsive
+  desktop states pass against the canonical visual direction on the approved
+  DreamCraftLabs HTTPS branch preview; evidence is in `design-qa.md`.
 
 The detailed role and journey evidence is in
 `docs/24_P0_JOURNEY_QA_MATRIX.md`.
