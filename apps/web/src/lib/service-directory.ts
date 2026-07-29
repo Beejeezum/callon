@@ -311,8 +311,7 @@ export const paseosServiceDirectoryEntries: ServiceDirectoryEntry[] = [
     contact: "https://vacationsbychristina.tpi-independent.com/",
     validationCount: 1,
     confidence: "medium",
-    notes:
-      "Recommended for summer vacation planning, especially Disney trips.",
+    notes: "Recommended for summer vacation planning, especially Disney trips.",
     sourceMessageIds: ["5441"],
   },
   {
@@ -378,8 +377,7 @@ export const paseosServiceDirectoryEntries: ServiceDirectoryEntry[] = [
     contact: "East Boca",
     validationCount: 1,
     confidence: "medium",
-    notes:
-      "Neighbor loves them and said they worked on a BMW.",
+    notes: "Neighbor loves them and said they worked on a BMW.",
     sourceMessageIds: ["7012"],
   },
   {
@@ -410,8 +408,7 @@ export const paseosServiceDirectoryEntries: ServiceDirectoryEntry[] = [
     vendor: "Paws in Delray",
     validationCount: 1,
     confidence: "medium",
-    notes:
-      "Neighbor said a good friend opened it and is caring and wonderful.",
+    notes: "Neighbor said a good friend opened it and is caring and wonderful.",
     sourceMessageIds: ["6028"],
   },
   {

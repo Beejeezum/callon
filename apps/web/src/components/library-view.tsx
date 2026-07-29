@@ -74,7 +74,9 @@ export function LibraryView({
   }, [services, category, query, mode]);
   const activeCategories = mode === "services" ? serviceCategories : categories;
   const hasResults =
-    mode === "services" ? visibleServices.length > 0 : visibleResources.length > 0;
+    mode === "services"
+      ? visibleServices.length > 0
+      : visibleResources.length > 0;
   const validatedServices = services.filter(
     (service) => service.validationCount >= 2,
   ).length;
@@ -274,11 +276,7 @@ export function LibraryView({
   );
 }
 
-function ServiceDirectoryCard({
-  service,
-}: {
-  service: ServiceDirectoryEntry;
-}) {
+function ServiceDirectoryCard({ service }: { service: ServiceDirectoryEntry }) {
   const validationLabel =
     service.validationCount >= 2
       ? `${service.validationCount}+ neighbor validations`
