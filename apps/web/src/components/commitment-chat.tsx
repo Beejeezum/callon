@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from "@phosphor-icons/react";
 import type { CommitmentView } from "@/server/transaction-queries";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import {
   completeCommitmentAction,
   sendCommitmentMessageAction,
@@ -20,13 +21,13 @@ import { Avatar, Button, ButtonLink, Card, PrivacyCallout } from "./ui";
 
 function dateTime(value: string | null) {
   if (!value) return "Coordinate in the private conversation";
-  return new Intl.DateTimeFormat("en-US", {
+  return formatPaseosDateTime(value, {
     weekday: "long",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(new Date(value));
+  });
 }
 
 export function CommitmentChat({ commitment }: { commitment: CommitmentView }) {

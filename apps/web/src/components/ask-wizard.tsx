@@ -18,6 +18,10 @@ import {
   UsersThree,
 } from "@phosphor-icons/react";
 import { useHydrated } from "@/lib/use-hydrated";
+import {
+  paseosDateTimeParts,
+  paseosLocalDateTimeToDate,
+} from "@/lib/paseos-time";
 import { Button } from "./ui";
 import { createAndPublishAskAction } from "@/server/ask-actions";
 
@@ -59,15 +63,6 @@ const initialNeeds: NeedDraft[] = [
   { id: "need-1", title: "", quantity: 1, kind: "lend" },
 ];
 
-function localDateTimeParts(value: string) {
-  const date = new Date(value);
-  const pad = (part: number) => `${part}`.padStart(2, "0");
-  return {
-    date: `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
-    time: `${pad(date.getHours())}:00`,
-  };
-}
-
 export function AskWizard({
   circleId,
   minimumNeededAt,
@@ -80,7 +75,7 @@ export function AskWizard({
   const router = useRouter();
   const hydrated = useHydrated();
   const suggested = useMemo(
-    () => localDateTimeParts(suggestedNeededAt),
+    () => paseosDateTimeParts(suggestedNeededAt),
     [suggestedNeededAt],
   );
   const [step, setStep] = useState(1);
@@ -103,11 +98,11 @@ export function AskWizard({
     [context, needs, title],
   );
   const canReview = useMemo(() => {
-    const neededBy = new Date(`${date}T${time}:00`);
+    const neededBy = paseosLocalDateTimeToDate(date, time);
     return (
       generalLocation.trim().length >= 2 &&
       Boolean(minimumNeededAt) &&
-      !Number.isNaN(neededBy.getTime()) &&
+      neededBy !== null &&
       neededBy >= new Date(minimumNeededAt)
     );
   }, [date, generalLocation, minimumNeededAt, time]);
@@ -137,8 +132,8 @@ export function AskWizard({
   async function publish() {
     setPublishing(true);
     setPublishError("");
-    const neededBy = new Date(`${date}T${time}:00`);
-    if (Number.isNaN(neededBy.getTime()) || neededBy <= new Date()) {
+    const neededBy = paseosLocalDateTimeToDate(date, time);
+    if (!neededBy || neededBy <= new Date()) {
       setPublishError("Choose a future date and time.");
       setPublishing(false);
       return;

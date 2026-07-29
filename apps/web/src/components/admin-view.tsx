@@ -10,6 +10,7 @@ import {
   UserCircle,
   WarningCircle,
 } from "@phosphor-icons/react";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import type { AdminOverview } from "@/server/admin-queries";
 import { createCircleInviteAction } from "@/server/circle-actions";
 import {
@@ -235,11 +236,11 @@ Made with neighborly love by Bruce 💚`;
                   </div>
                   <div className="tiny muted">
                     {statusLabel(invite.status)} · expires{" "}
-                    {new Intl.DateTimeFormat("en-US", {
+                    {formatPaseosDateTime(invite.expiresAt, {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
-                    }).format(new Date(invite.expiresAt))}
+                    })}
                   </div>
                 </div>
                 {invite.status === "active" ? (

@@ -2,6 +2,7 @@ import { AppShell, MobileHeader } from "@/components/app-shell";
 import { LoanTracker } from "@/components/loan-tracker";
 import { getLoanDetail } from "@/server/transaction-queries";
 import { getSessionContext } from "@/server/session";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import { notFound } from "next/navigation";
 
 export default async function LoanPage({
@@ -20,11 +21,11 @@ export default async function LoanPage({
           title="Loan custody"
           subtitle={
             loan.dueAt
-              ? `Due ${new Intl.DateTimeFormat("en-US", {
+              ? `Due ${formatPaseosDateTime(loan.dueAt, {
                   month: "short",
                   day: "numeric",
                   hour: "numeric",
-                }).format(new Date(loan.dueAt))}`
+                })}`
               : "Private custody record"
           }
           backHref="/activity"

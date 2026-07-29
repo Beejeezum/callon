@@ -1,15 +1,16 @@
 import "server-only";
 import { cache } from "react";
 import { isSupabaseConfigured } from "@/lib/public-env";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 function shortDate(value: string | null) {
   if (!value) return "";
-  return new Intl.DateTimeFormat("en-US", {
+  return formatPaseosDateTime(value, {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(new Date(value));
+  });
 }
 
 export type ActivityData = {
@@ -544,10 +545,10 @@ export const getProfileView = cache(
       completedShares: completedShares ?? 0,
       unresolvedIssues: unresolvedIssues ?? 0,
       memberSince: membership?.joined_at
-        ? new Intl.DateTimeFormat("en-US", {
+        ? formatPaseosDateTime(membership.joined_at, {
             month: "long",
             year: "numeric",
-          }).format(new Date(membership.joined_at))
+          })
         : "Recently",
     };
   },

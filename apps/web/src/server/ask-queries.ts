@@ -3,6 +3,7 @@ import { cache } from "react";
 import type { Ask, Need } from "@/lib/mock-data";
 import { asks as mockAsks, getAsk as getMockAsk } from "@/lib/mock-data";
 import { isSupabaseConfigured } from "@/lib/public-env";
+import { formatPaseosDateTime } from "@/lib/paseos-time";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { hashOpaqueToken } from "./tokens";
 
@@ -31,13 +32,13 @@ export type MemberAskProjection = Ask & {
 };
 
 function dateLabel(iso: string) {
-  return new Intl.DateTimeFormat("en-US", {
+  return formatPaseosDateTime(iso, {
     weekday: "short",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(new Date(iso));
+  });
 }
 
 function mapAsk(row: AskRow): Ask {

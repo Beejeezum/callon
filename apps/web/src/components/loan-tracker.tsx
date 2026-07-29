@@ -13,6 +13,10 @@ import {
 } from "@phosphor-icons/react";
 import type { LoanView } from "@/server/transaction-queries";
 import {
+  formatPaseosDateTime,
+  paseosLocalDateTimeToDate,
+} from "@/lib/paseos-time";
+import {
   declineLoanExtensionAction,
   reportLoanIncidentAction,
   saveResourceFromLoanAction,
@@ -22,13 +26,13 @@ import { Button, ButtonLink, Card, Chip } from "./ui";
 
 function dateTime(value: string | null) {
   if (!value) return "No date recorded";
-  return new Intl.DateTimeFormat("en-US", {
+  return formatPaseosDateTime(value, {
     weekday: "long",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(new Date(value));
+  });
 }
 
 function statusLabel(status: string) {
@@ -90,8 +94,8 @@ export function LoanTracker({ loan }: { loan: LoanView }) {
   }
 
   async function requestExtension() {
-    const proposed = new Date(`${extensionDate}T${extensionTime}:00`);
-    if (Number.isNaN(proposed.getTime()) || proposed <= new Date()) {
+    const proposed = paseosLocalDateTimeToDate(extensionDate, extensionTime);
+    if (!proposed || proposed <= new Date()) {
       setError("Choose a future return time.");
       return;
     }
