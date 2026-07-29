@@ -4,6 +4,7 @@ import {
   getCircleLibrary,
   getResourceCategories,
 } from "@/server/resource-queries";
+import { getCommunityServiceDirectory } from "@/server/service-directory-queries";
 import { getSessionContext } from "@/server/session";
 
 export default async function LibraryPage({
@@ -13,9 +14,13 @@ export default async function LibraryPage({
 }) {
   const session = await getSessionContext();
   const membership = session.activeMembership;
-  const [resources, categories, params] = await Promise.all([
+  const [resources, categories, serviceDirectory, params] = await Promise.all([
     getCircleLibrary(membership?.circleId ?? null, session.profileId),
     getResourceCategories(),
+    getCommunityServiceDirectory({
+      circleId: membership?.circleId ?? null,
+      circleName: membership?.circleName,
+    }),
     searchParams,
   ]);
   return (
@@ -31,6 +36,10 @@ export default async function LibraryPage({
         <LibraryView
           resources={resources}
           categories={categories}
+          serviceCategories={serviceDirectory.categories}
+          services={serviceDirectory.entries}
+          serviceMessageCount={serviceDirectory.messageCount}
+          serviceSourceLabel={serviceDirectory.sourceLabel}
           canAdd={!session.configured || membership?.status === "active"}
           added={params.added === "1"}
         />
